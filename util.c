@@ -1,7 +1,7 @@
 #include "util.h"
 
 void end(const char *msg) {
-	fprintf("%s\n", msg);
+	fprintf(stderr, "%s\n", msg);
 	exit(1);
 }
 

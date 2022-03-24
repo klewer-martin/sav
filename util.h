@@ -2,6 +2,7 @@
 #define  __UTIL_H__
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void end(const char *msg);
 void swap(int *a, int *b);
