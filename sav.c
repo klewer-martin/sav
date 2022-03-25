@@ -8,6 +8,7 @@
 
 #include "drw.h"
 #include "util.h"
+#include "sort.h"
 
 #define WINDOW_TITLE "Sorting Algorithms Visualized"
 #define WINDOW_WIDTH 	0
@@ -17,8 +18,6 @@
 #define Y_BORDER	50
 #define RECT_WIDTH	5
 
-#define INIT_SIZE 50
-
 typedef struct {
 	SDL_Window *window;
 	SDL_Renderer *rend;
@@ -27,13 +26,17 @@ typedef struct {
 } Root;
 
 Root root;
-static size_t x = 0;	
+
+SDL_Window *window;
+SDL_Renderer *renderer;
+int w, h;
+size_t x = 0;	
 
 void setup(void) {
 	SDL_Init(SDL_INIT_VIDEO);
 
     // Create an application window with the following settings:
-    root.window = SDL_CreateWindow(
+    window = SDL_CreateWindow(
 		WINDOW_TITLE,					// window title
 		SDL_WINDOWPOS_UNDEFINED,		// initial x position
 		SDL_WINDOWPOS_UNDEFINED,		// initial y position
@@ -43,22 +46,19 @@ void setup(void) {
 		SDL_WINDOW_RESIZABLE			// window flags
     );
 
-	root.x_border = 5;
-	root.y_border = 5;
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	root.rend = SDL_CreateRenderer(root.window, -1, SDL_RENDERER_ACCELERATED);
+	if (!window) end("SDL: window cannot be created");
 
-	if (!root.window) end("SDL: window cannot be created");
-
-	SDL_SetRenderDrawColor(root.rend, 32, 32, 32, 0);
-	SDL_RenderClear(root.rend);
-	SDL_RenderPresent(root.rend);
-	SDL_RenderClear(root.rend);
+	SDL_SetRenderDrawColor(renderer, 32, 32, 32, 0);
+	SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
+	SDL_RenderClear(renderer);
 }
 
 void cleanup(void) {
-	SDL_DestroyRenderer(root.rend);
-    SDL_DestroyWindow(root.window);
+	SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
 	SDL_Quit();
 }
 
@@ -66,42 +66,22 @@ void drw_element(size_t height) {
 	SDL_Rect r;
 
 	r.x = X_BORDER + x; // bottom left + x
-	r.y = root.h - Y_BORDER + 1; // bottom
+	r.y = h - Y_BORDER + 1; // bottom
 	r.w = RECT_WIDTH; // fixed width
 	r.h = -height;
 
-	SDL_RenderDrawRect(root.rend, &r);
-	SDL_SetRenderDrawColor(root.rend, 255, 0, 0, 0);
-	SDL_RenderFillRect(root.rend, &r);
+	SDL_RenderDrawRect(renderer, &r);
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+	SDL_RenderFillRect(renderer, &r);
 
-	SDL_SetRenderDrawColor(root.rend, 0, 0, 0, 0);
-	SDL_RenderDrawLine(root.rend,
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	SDL_RenderDrawLine(renderer,
 			x + X_BORDER,
-			root.h - Y_BORDER,
+			h - Y_BORDER,
 			x + X_BORDER,
-			root.h - Y_BORDER - height);
+			h - Y_BORDER - height);
 
 	x += RECT_WIDTH;
-}
-
-void bubble_sort(int *arr, size_t len)
-{
-	if(arr == NULL) return;
-
-	size_t swaps, top;
-	top = len;
-	for(size_t i = 0; i < len; ++i) {
-		for(size_t j = 0; j < (top - 1); j++) {
-			if(arr[j] > arr[j + 1]) {
-				swap(&arr[j], &arr[j + 1]);
-				swaps++;
-			} else if(arr[top - 1] == (arr[top] - 1)) {
-				len--;
-			}
-		}
-		if(swaps == 0) break;
-		top--;
-	}
 }
 
 int main (void) {
@@ -117,6 +97,8 @@ int main (void) {
 			arr[i] = (rand() % arr_max);
 
 	bool run = true;
+	bool sorted = false;
+
 	while(run) {
 		SDL_Event event;
 
@@ -128,15 +110,25 @@ int main (void) {
 				break;
 			}
 		}
-		SDL_SetRenderDrawColor(root.rend, 28, 28, 28, 0);
-		SDL_RenderPresent(root.rend);
-		SDL_RenderClear(root.rend);
-		SDL_GetWindowSize(root.window, &root.w, &root.h);
+		SDL_SetRenderDrawColor(renderer, 28, 28, 28, 0);
+		SDL_RenderPresent(renderer);
+		SDL_RenderClear(renderer);
+		SDL_GetWindowSize(window, &w, &h);
 
 		for(size_t i = 0; i < len; i++)
 			drw_element(arr[i]);
 
-		SDL_RenderPresent(root.rend);
+		SDL_RenderPresent(renderer);
+
+		if(sorted == false) {
+			if(!insertion_sort(arr, len)) {
+				sorted = true;
+				printf("The array has been sorted\n");
+			}
+		}
+
+		SDL_Delay(100);
+
 		x = 0;
 	}
 	

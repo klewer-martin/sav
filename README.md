@@ -1,3 +1,3 @@
-# Sorting Algorithms Visualized [ WIP ]
+# SAV - Sorting Algorithms Visualized
 
-The idea is to make a visual program that shows how an array is being sorted
+The idea is to develop a visual program that shows how an array is being sorted
