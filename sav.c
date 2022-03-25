@@ -17,7 +17,7 @@
 #define SEL_COLOR	0x00FFFF00 // RGBA
 #define CMP_COLOR	0x0000FF00
 
-#define ARR_LEN		120
+#define ARR_LEN		150
 #define ARR_MAX		500
 
 #define X_BORDER	50
@@ -29,6 +29,7 @@ SDL_Renderer *renderer;
 
 int x, w, h, arr[ARR_LEN];
 size_t sel, cmp, arr_max;	
+bool run = true;
 
 void setup(void) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -51,7 +52,6 @@ void setup(void) {
 	SDL_SetRenderDrawColor(renderer, 32, 32, 32, 0);
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
-	SDL_RenderClear(renderer);
 }
 
 void cleanup(void) {
@@ -69,7 +69,7 @@ void drw_element(size_t height) {
 	rect.h = -height;
 
 	SDL_RenderDrawRect(renderer, &rect);
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0); // RGBA
 	SDL_RenderFillRect(renderer, &rect);
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -108,6 +108,7 @@ void drw_element_color(size_t height, unsigned int color) {
 			h - Y_BORDER - height);
 
 	x += RECT_WIDTH;
+	printf("x: %d\n", x);
 }
 
 void update_graph(void) {
@@ -115,7 +116,6 @@ void update_graph(void) {
 	SDL_RenderClear(renderer);
 
 	SDL_GetWindowSize(window, &w, &h);
-
 
 	// reset 'x' in order to start drawing from the left 
 	x = 0;
@@ -128,12 +128,23 @@ void update_graph(void) {
 	SDL_RenderPresent(renderer);
 }
 
+void check_events(void) {
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
+			event.type = SDL_QUIT;
+			SDL_PushEvent(&event);
+			run = false;
+			break;
+		}
+	}
+}
+
 int main (void) {
 	setup();
 	size_t i, j;
 	int key;
 
-	bool run = true;
 	bool sorted = false;
 
 	arr_max = ARR_MAX;
@@ -146,16 +157,7 @@ int main (void) {
 
 	// main loop
 	while(run) {
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
-				event.type = SDL_QUIT;
-				SDL_PushEvent(&event);
-				run = false;
-				break;
-			}
-		}
-
+		check_events();
 		// sort the array while updating the graph
 		if(sorted == false) {
 			for(i = 1; i < ARR_LEN; i++) {
@@ -167,21 +169,23 @@ int main (void) {
 					sel = i;
 					cmp = j;
 					update_graph();
+					check_events();
+					if(run == false) goto end_main_while;
 				}
 				arr[j + 1] = key;
 				sel = i;
 				cmp = j;
+				check_events();
+				if(run == false) goto end_main_while;
 				update_graph();
 			}
-
 			sel = cmp = i; 
 			update_graph();
-
 			sorted = true;
 			printf("Array sorted\n");
 		}
-
 		update_graph();
+end_main_while:
 	}
 	
 	cleanup();
