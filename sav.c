@@ -14,23 +14,21 @@
 #define WINDOW_WIDTH 	0
 #define WINDOW_HEIGHT 	0
 
+#define SEL_COLOR	0x00FFFF00 // RGBA
+#define CMP_COLOR	0x0000FF00
+
+#define ARR_LEN		120
+#define ARR_MAX		500
+
 #define X_BORDER	50
 #define Y_BORDER	50
 #define RECT_WIDTH	5
 
-typedef struct {
-	SDL_Window *window;
-	SDL_Renderer *rend;
-	int w, h;
-	size_t x_border, y_border;
-} Root;
-
-Root root;
-
 SDL_Window *window;
 SDL_Renderer *renderer;
-int w, h;
-size_t x = 0;	
+
+int x, w, h, arr[ARR_LEN];
+size_t sel, cmp, arr_max;	
 
 void setup(void) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -63,16 +61,16 @@ void cleanup(void) {
 }
 
 void drw_element(size_t height) {
-	SDL_Rect r;
+	SDL_Rect rect;
 
-	r.x = X_BORDER + x; // bottom left + x
-	r.y = h - Y_BORDER + 1; // bottom
-	r.w = RECT_WIDTH; // fixed width
-	r.h = -height;
+	rect.x = X_BORDER + x; // bottom left + x
+	rect.y = h - Y_BORDER + 1; // bottom
+	rect.w = RECT_WIDTH; // fixed width
+	rect.h = -height;
 
-	SDL_RenderDrawRect(renderer, &r);
+	SDL_RenderDrawRect(renderer, &rect);
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
-	SDL_RenderFillRect(renderer, &r);
+	SDL_RenderFillRect(renderer, &rect);
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderDrawLine(renderer,
@@ -84,24 +82,71 @@ void drw_element(size_t height) {
 	x += RECT_WIDTH;
 }
 
+void drw_element_color(size_t height, unsigned int color) {
+	SDL_Rect rect;
+	unsigned char r, g, b, a;
+
+	rect.x = X_BORDER + x; // bottom left + x
+	rect.y = h - Y_BORDER + 1; // bottom
+	rect.w = RECT_WIDTH; // fixed width
+	rect.h = -height;
+
+	r = (char)(color >> 24) & 0xFF;
+	g = (char)(color >> 16) & 0xFF;
+	b = (char)(color >> 8) & 0xFF;
+	a = (char)(color) & 0xFF;
+
+	SDL_RenderDrawRect(renderer, &rect);
+	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+	SDL_RenderFillRect(renderer, &rect);
+
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	SDL_RenderDrawLine(renderer,
+			x + X_BORDER,
+			h - Y_BORDER,
+			x + X_BORDER,
+			h - Y_BORDER - height);
+
+	x += RECT_WIDTH;
+}
+
+void update_graph(void) {
+	SDL_SetRenderDrawColor(renderer, 28, 28, 28, 0);
+	SDL_RenderClear(renderer);
+
+	SDL_GetWindowSize(window, &w, &h);
+
+
+	// reset 'x' in order to start drawing from the left 
+	x = 0;
+	for(size_t i = 0; i < ARR_LEN; i++) {
+		if(i == sel) drw_element_color(arr[i], SEL_COLOR);
+		else if(i == cmp) drw_element_color(arr[i], CMP_COLOR);
+		else drw_element(arr[i]);
+	}
+
+	SDL_RenderPresent(renderer);
+}
+
 int main (void) {
 	setup();
-
-	size_t len = 100;
-	int arr[len];
-	size_t arr_max = 400;
-
-	srand((unsigned int)time(NULL));
-	for(size_t i = 0; i < len; i++)
-		while(!(arr[i] = rand() % arr_max))
-			arr[i] = (rand() % arr_max);
+	size_t i, j;
+	int key;
 
 	bool run = true;
 	bool sorted = false;
 
+	arr_max = ARR_MAX;
+
+	// create a random array
+	srand((unsigned int)time(NULL));
+	for(i = 0; i < ARR_LEN; i++)
+		while(!(arr[i] = rand() % arr_max))
+			arr[i] = (rand() % arr_max);
+
+	// main loop
 	while(run) {
 		SDL_Event event;
-
 		while (SDL_PollEvent(&event)) {
 			if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
 				event.type = SDL_QUIT;
@@ -110,26 +155,33 @@ int main (void) {
 				break;
 			}
 		}
-		SDL_SetRenderDrawColor(renderer, 28, 28, 28, 0);
-		SDL_RenderPresent(renderer);
-		SDL_RenderClear(renderer);
-		SDL_GetWindowSize(window, &w, &h);
 
-		for(size_t i = 0; i < len; i++)
-			drw_element(arr[i]);
-
-		SDL_RenderPresent(renderer);
-
+		// sort the array while updating the graph
 		if(sorted == false) {
-			if(!insertion_sort(arr, len)) {
-				sorted = true;
-				printf("The array has been sorted\n");
+			for(i = 1; i < ARR_LEN; i++) {
+				key = arr[i];
+				j = i - 1;
+				while((j >= 0) && (arr[j] > key)) {
+					arr[j + 1] = arr[j];
+					j = j - 1;
+					sel = i;
+					cmp = j;
+					update_graph();
+				}
+				arr[j + 1] = key;
+				sel = i;
+				cmp = j;
+				update_graph();
 			}
+
+			sel = cmp = i; 
+			update_graph();
+
+			sorted = true;
+			printf("Array sorted\n");
 		}
 
-		SDL_Delay(100);
-
-		x = 0;
+		update_graph();
 	}
 	
 	cleanup();

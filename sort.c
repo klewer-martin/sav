@@ -53,4 +53,3 @@ int insertion_sort(int *arr, size_t len) {
 
 	return 0;
 }
-
