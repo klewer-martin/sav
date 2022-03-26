@@ -6,8 +6,8 @@
 int bubble_sort(int *arr, size_t len) {
 	if(arr == NULL) return 1;
 
-	size_t swaps, top;
-	top = len;
+	/* size_t swaps, top; */
+	/* top = len; */
 
 	static size_t i = 0;
 	static size_t j = 100;

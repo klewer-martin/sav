@@ -1,6 +1,6 @@
 CC := cc
-CLIBS :=
-CFLAGS := `sdl2-config --libs --cflags` -lSDL2_image -lm
+CLIBS := `sdl2-config --libs --cflags`
+CFLAGS := -lSDL2_image -lm -Wall -pedantic -ansi -std=c99
 SRCS := sav.c util.c sort.c
 OBJS := $(SRCS:.c=.o)
 
@@ -11,10 +11,10 @@ TARGET := sav
 all: $(TARGET) clean
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(CLIBS) -o $@ $^
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CLIBS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS)

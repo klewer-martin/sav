@@ -14,21 +14,29 @@
 #define WINDOW_WIDTH 	0
 #define WINDOW_HEIGHT 	0
 
-#define SEL_COLOR	0x00FFFF00 // RGBA
-#define CMP_COLOR	0x0000FF00
+#define SEL_COLOR	0x00FF0000 // RGBA
+#define CMP_COLOR	0x00FFFF00
 
-#define ARR_LEN		150
+#define ANIM_SPEED	50
+#define SPEED_STEP	10
+
+#define ARR_LEN		100
 #define ARR_MAX		500
 
-#define X_BORDER	50
-#define Y_BORDER	50
+#define X_BORDER	25
+#define Y_BORDER	25
 #define RECT_WIDTH	5
+
+#define SPEED_MIN 5000
+#define SPEED_MAX 0
 
 SDL_Window *window;
 SDL_Renderer *renderer;
 
-int x, w, h, arr[ARR_LEN];
-size_t sel, cmp, arr_max;	
+int x, w, h, arr[ARR_LEN], speed;
+size_t sel, cmp, arr_max, x_border, y_border, g_w, g_h;	
+int min_w, min_h;
+
 bool run = true;
 
 void setup(void) {
@@ -41,8 +49,7 @@ void setup(void) {
 		SDL_WINDOWPOS_UNDEFINED,		// initial y position
 		WINDOW_WIDTH,					// width, in pixels
 		WINDOW_HEIGHT,					// height, in pixels
-		SDL_WINDOW_OPENGL | 
-		SDL_WINDOW_RESIZABLE			// window flags
+		SDL_WINDOW_OPENGL				// window flags
     );
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -63,13 +70,13 @@ void cleanup(void) {
 void drw_element(size_t height) {
 	SDL_Rect rect;
 
-	rect.x = X_BORDER + x; // bottom left + x
-	rect.y = h - Y_BORDER + 1; // bottom
-	rect.w = RECT_WIDTH; // fixed width
+	rect.x = X_BORDER + x; /* bottom left + x */
+	rect.y = h - Y_BORDER + 1; /* bottom */
+	rect.w = RECT_WIDTH; /* fixed width */
 	rect.h = -height;
 
 	SDL_RenderDrawRect(renderer, &rect);
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0); // RGBA
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0); /* RGBA */
 	SDL_RenderFillRect(renderer, &rect);
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -86,9 +93,9 @@ void drw_element_color(size_t height, unsigned int color) {
 	SDL_Rect rect;
 	unsigned char r, g, b, a;
 
-	rect.x = X_BORDER + x; // bottom left + x
-	rect.y = h - Y_BORDER + 1; // bottom
-	rect.w = RECT_WIDTH; // fixed width
+	rect.x = X_BORDER + x; /* bottom left + x */
+	rect.y = h - Y_BORDER + 1; /* bottom */
+	rect.w = RECT_WIDTH; /* fixed width */
 	rect.h = -height;
 
 	r = (char)(color >> 24) & 0xFF;
@@ -108,7 +115,22 @@ void drw_element_color(size_t height, unsigned int color) {
 			h - Y_BORDER - height);
 
 	x += RECT_WIDTH;
-	printf("x: %d\n", x);
+}
+
+void update_window_size(void) {
+	SDL_GetWindowSize(window, &w, &h);
+
+	g_w = (ARR_LEN * RECT_WIDTH);
+	g_h = (ARR_MAX);
+
+	x_border = X_BORDER;
+	y_border = Y_BORDER;
+
+	min_w = (g_w + (2 * x_border));
+	min_h = (g_h + (2 * y_border));
+
+	SDL_SetWindowMinimumSize(window, min_w, min_h);
+	SDL_SetWindowMaximumSize(window, min_w, min_h);
 }
 
 void update_graph(void) {
@@ -117,9 +139,9 @@ void update_graph(void) {
 
 	SDL_GetWindowSize(window, &w, &h);
 
-	// reset 'x' in order to start drawing from the left 
-	x = 0;
-	for(size_t i = 0; i < ARR_LEN; i++) {
+	/* reset 'x' in order to start drawing from the left */ 
+	size_t i;
+	for(i = x = 0; i < ARR_LEN; i++) {
 		if(i == sel) drw_element_color(arr[i], SEL_COLOR);
 		else if(i == cmp) drw_element_color(arr[i], CMP_COLOR);
 		else drw_element(arr[i]);
@@ -131,11 +153,19 @@ void update_graph(void) {
 void check_events(void) {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
-		if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
-			event.type = SDL_QUIT;
-			SDL_PushEvent(&event);
-			run = false;
-			break;
+		switch(event.type) {
+		case SDL_QUIT: run = false; break;
+		case SDL_KEYDOWN:
+			switch(event.key.keysym.scancode) {
+			case SDL_SCANCODE_EQUALS: 
+				if(speed > SPEED_MAX) speed -= SPEED_STEP;
+				break;
+			case SDL_SCANCODE_MINUS:
+				if(speed < SPEED_MIN) speed += SPEED_STEP;
+				break;
+			default: break;
+		   }
+		default: break;
 		}
 	}
 }
@@ -145,20 +175,24 @@ int main (void) {
 	size_t i, j;
 	int key;
 
+	speed = ANIM_SPEED;
+
 	bool sorted = false;
 
 	arr_max = ARR_MAX;
 
-	// create a random array
+	update_window_size();
+
+	/* create a random array */
 	srand((unsigned int)time(NULL));
 	for(i = 0; i < ARR_LEN; i++)
 		while(!(arr[i] = rand() % arr_max))
 			arr[i] = (rand() % arr_max);
 
-	// main loop
+	/* main loop */
 	while(run) {
 		check_events();
-		// sort the array while updating the graph
+		/* sort the array while updating the graph */
 		if(sorted == false) {
 			for(i = 1; i < ARR_LEN; i++) {
 				key = arr[i];
@@ -169,6 +203,7 @@ int main (void) {
 					sel = i;
 					cmp = j;
 					update_graph();
+					SDL_Delay(speed);
 					check_events();
 					if(run == false) goto end_main_while;
 				}
@@ -178,15 +213,17 @@ int main (void) {
 				check_events();
 				if(run == false) goto end_main_while;
 				update_graph();
+				SDL_Delay(speed);
 			}
 			sel = cmp = i; 
 			update_graph();
+			SDL_Delay(speed);
 			sorted = true;
-			printf("Array sorted\n");
 		}
 		update_graph();
-end_main_while:
+		SDL_Delay(speed);
 	}
+end_main_while:
 	
 	cleanup();
 	return 0;
