@@ -13,11 +13,7 @@
 /* 	void (*sort)(int *arr, size_t len); */
 /* } Sav; */
 
-typedef enum {
-	RUN,
-	PAUSE,
-	STOP
-} status_t;
+#include "util.h"
 
 void check_events(status_t *status);
 void setup(SDL_Window **win, SDL_Renderer **rend);

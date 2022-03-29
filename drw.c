@@ -1,10 +1,7 @@
 #include "drw.h"
 
-#define X_BORDER	40
-#define Y_BORDER	40
-#define RECT_WIDTH	5
-
-void drw_element(SDL_Renderer *rend, int x, int y, int h) {
+void
+drw_element(SDL_Renderer *rend, int x, int y, int h) {
 	SDL_Rect rect;
 
 	rect.x = x + X_BORDER; /* top left + x */
@@ -20,7 +17,8 @@ void drw_element(SDL_Renderer *rend, int x, int y, int h) {
 	SDL_RenderDrawLine(rend, x + X_BORDER, y - Y_BORDER, x + X_BORDER, y - Y_BORDER - h);
 }
 
-void drw_element_color(SDL_Renderer *rend, int x, int y, int h, unsigned int col) {
+void
+drw_element_color(SDL_Renderer *rend, int x, int y, int h, unsigned int col) {
 	SDL_Rect rect;
 	unsigned char r, g, b, a;
 

@@ -1,17 +1,9 @@
 #include "sdl_extra.h"
-#include "util.h"
 
 #define WINDOW_TITLE "SAV - Sorting Algorithms Visualized"
 
-#define ARR_LEN		120
-#define ARR_MAX		500
-
-#define X_BORDER	40
-#define Y_BORDER	40
-#define RECT_WIDTH	5
-#define TOP_BORDER	50
-
-void check_events(status_t *status) {
+void
+check_events(status_t *status) {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		switch(event.type) {
@@ -35,7 +27,8 @@ void check_events(status_t *status) {
 	}
 }
 
-void setup(SDL_Window **win, SDL_Renderer **rend) {
+void
+setup(SDL_Window **win, SDL_Renderer **rend) {
 	int min_w, min_h;
 
 	SDL_Init(SDL_INIT_VIDEO);
@@ -66,9 +59,9 @@ void setup(SDL_Window **win, SDL_Renderer **rend) {
 	SDL_SetWindowMaximumSize(*win, min_w, min_h);
 }
 
-void cleanup(SDL_Window *win, SDL_Renderer *rend) {
+void
+cleanup(SDL_Window *win, SDL_Renderer *rend) {
 	SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
 	SDL_Quit();
 }
-
