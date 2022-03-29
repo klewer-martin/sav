@@ -1,7 +1,10 @@
 #ifndef __SORT_H__
 #define __SORT_H__
 
-int bubble_sort(int *arr, size_t len);
-void insertion_sort(int *arr, size_t len);
+#include "sav.h"
+#include "util.h"
+
+int bubble_sort(SAV *);
+void insertion_sort(SAV *);
 
 #endif // __SORT_H__

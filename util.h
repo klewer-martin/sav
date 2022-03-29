@@ -17,10 +17,17 @@ typedef enum {
 	RUN,
 	PAUSE,
 	UPDATE,
+	ERROR_MEMORY_ALLOC,
 	STOP
 } status_t;
 
+typedef struct {
+	int *v;
+	size_t len;
+} Arr;
+
 void end(const char *msg);
 void swap(int *a, int *b);
+void wait_main_thread(status_t *st);
 
 #endif // __UTIL_H__

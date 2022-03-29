@@ -2,32 +2,31 @@
 #include <stdbool.h>
 
 #include "sort.h"
-#include "util.h"
 
-int bubble_sort(int *arr, size_t len) {
-	if(arr == NULL) return 1;
+void
+insertion_sort(SAV *sav) {
+	int key;
+	size_t i, j;
 
-	/* size_t swaps, top; */
-	/* top = len; */
+	for(i = 1; i < sav->arr->len; i++) {
+		key = sav->arr->v[i];
+		j = i - 1;
+		while((j >= 0) && (sav->arr->v[j] > key)) {
+			sav->arr->v[j + 1] = sav->arr->v[j];
+			j = j - 1;
 
-	static size_t i = 0;
-	static size_t j = 100;
+			sav->sel = i;
+			sav->cmp = j;
 
-	if(i < len) {
-		if(j > (i + 1)) {
-			if(arr[j] < arr[j - 1])
-				swap(&arr[j], &arr[j + 1]);
-
-			printf("j: %ld\n", j);
-
-			j--;
-			return 1;
+			/* wait 'til main thread updates graphics */
+			wait_main_thread(&(sav->status));
+			if(sav->status == STOP) break;
 		}
-		/* if(swaps == 0) break; */
-		printf("i: %ld\n", i);
-		i++;
-		j = 100;
-	} else return 0;
-
-	return 1;
+		sav->arr->v[j + 1] = key;
+		sav->sel = i;
+		sav->cmp = j;
+		/* wait 'til main thread updates graphics */
+		wait_main_thread(&(sav->status));
+		if(sav->status == STOP) break;
+	}
 }

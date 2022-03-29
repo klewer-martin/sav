@@ -39,3 +39,22 @@ drw_element_color(SDL_Renderer *rend, int x, int y, int h, unsigned int col) {
 	SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
 	SDL_RenderDrawLine(rend, x + X_BORDER, y - Y_BORDER, x + X_BORDER, y - Y_BORDER - h);
 }
+
+void
+drw_array_graph(SDL_Renderer *rend, SDL_Window *win, SAV *sav) {
+	int x, w, h;
+
+	SDL_GetWindowSize(win, &w, &h);
+
+	SDL_SetRenderDrawColor(rend, 29, 28, 28, 0);
+	SDL_RenderClear(rend);
+
+	size_t i;
+	for(i = x = 0; i < sav->arr->len; i++, x += RECT_WIDTH) {
+		if(i == sav->sel) drw_element_color(rend, x, h, sav->arr->v[i], SEL_COLOR);
+		else if(i == sav->cmp) drw_element_color(rend, x, h, sav->arr->v[i], CMP_COLOR);
+		else drw_element(rend, x, h, sav->arr->v[i]);
+	}
+
+	SDL_RenderPresent(rend);
+}
