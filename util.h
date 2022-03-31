@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ARR_LEN		120
-#define ARR_MAX		500
+#define ARR_LEN		100
+#define ARR_MAX		400
 
 #define X_BORDER	40
 #define Y_BORDER	40
@@ -18,6 +18,7 @@ typedef enum {
 	PAUSE,
 	UPDATE,
 	ERROR_MEMORY_ALLOC,
+	SORTED,
 	STOP
 } status_t;
 

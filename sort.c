@@ -13,7 +13,7 @@ insertion_sort(SAV *sav) {
 		j = i - 1;
 		while((j >= 0) && (sav->arr->v[j] > key)) {
 			sav->arr->v[j + 1] = sav->arr->v[j];
-			j = j - 1;
+			j--;
 
 			sav->sel = i;
 			sav->cmp = j;
@@ -29,4 +29,5 @@ insertion_sort(SAV *sav) {
 		wait_main_thread(&(sav->status));
 		if(sav->status == STOP) break;
 	}
+	if(sav->status != STOP) sav->status = SORTED;
 }

@@ -44,6 +44,11 @@ setup(SDL_Window **win, SDL_Renderer **rend) {
 
 	*rend = SDL_CreateRenderer(*win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
+	if(TTF_Init()==-1) {
+		printf("TTF_Init: %s\n", TTF_GetError());
+		exit(2);
+	}
+
 	if (*win == NULL) end("SDL: window cannot be created");
 	else if (*rend == NULL) end("SDL: renderer cannot be created");
 
@@ -63,5 +68,6 @@ void
 cleanup(SDL_Window *win, SDL_Renderer *rend) {
 	SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
+	TTF_Quit();
 	SDL_Quit();
 }
