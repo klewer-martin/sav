@@ -55,10 +55,23 @@ drw_status_bar(Drw *drw, SAV *sav) {
 	SDL_SetRenderDrawColor(drw->rend, 0, 0, 0, 0); /* RGBA */
 	SDL_RenderFillRect(drw->rend, &rect);
 
-	if((sav->status == RUN) || (sav->status == UPDATE))
-		drw_text(drw, "SORTING -- insertion sort", 10, drw->h - drw->font_size - 5);
-	else if(sav->status == SORTED)
-		drw_text(drw, "SORTED -- insertion sort", 10, drw->h - drw->font_size - 5);
+	char status_text[drw-> w / drw->font_size];
+
+	/* sprintf(status_text, "SORTING (insertion sort)     C: %ld, S: %ld", sav->comparisons, sav->swaps); */
+	/* sprintf(status_text, "SORTING (insertion sort)", sav->comparisons, sav->swaps); */
+	/* sprintf(status_text, "C: %ld, S: %ld", sav->comparisons, sav->swaps); */
+
+	if((sav->status == RUN) || (sav->status == UPDATE)) {
+		/* sprintf(status_text, "Press SPACE to start sorting the array or ESC/q to quit"); */
+		sprintf(status_text, "SORTING (insertion sort)     C: %ld, S: %ld", sav->cmps, sav->swps);
+		drw_text(drw, status_text, 0, drw->h - drw->font_size - 5);
+	} else if(sav->status == SORTED) {
+		sprintf(status_text, "(insertion sort) done in %.2fs, C: %ld, S: %ld",
+				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
+				sav->cmps, sav->swps);
+
+		drw_text(drw, status_text, 0, drw->h - drw->font_size - 5);
+	}
 
 	/* SDL_RenderCopy(drw->rend, drw->text_texture, NULL, &text_rect); */
 }
@@ -76,7 +89,8 @@ status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw) {
 	if((*drw = (Drw *)malloc(sizeof(Drw))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
-	TTF_Font *font = TTF_OpenFont("/usr/share/fonts/TTF/DejaVuSansMono.ttf", FONT_SIZE);
+	TTF_Font *font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
+
 	if(!font) fprintf(stderr, "TTF_OpenFont: %s\n", TTF_GetError());
 
 	(*drw)->rend = rend;
@@ -84,9 +98,9 @@ status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw) {
 	(*drw)->font = font;
 	(*drw)->font_size = FONT_SIZE;
 
-	(*drw)->text_color.r = 255;
-	(*drw)->text_color.g = 255;
-	(*drw)->text_color.b = 255;
+	(*drw)->text_color.r = (char)(FONT_COLOR >> 16) & 0xFF;
+	(*drw)->text_color.g = (char)(FONT_COLOR >> 8) & 0xFF;
+	(*drw)->text_color.b = (char)(FONT_COLOR) & 0xFF;
 
 	SDL_GetWindowSize(win, &((*drw)->w), &((*drw)->h));
 

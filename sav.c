@@ -18,7 +18,7 @@ status_t SAV_New(SAV **sav) {
 	if((*sav = (SAV *)malloc(sizeof(SAV))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
-	(*sav)->sel = (*sav)->cmp = 0;
+	(*sav)->sel = (*sav)->cmp = (*sav)->cmps = (*sav)->swps = 0;
 	(*sav)->status = RUN;
 
 	if(((*sav)->arr = (Arr *)malloc(sizeof(Arr))) == NULL)
@@ -69,9 +69,10 @@ main (void) {
 	for(size_t i = 0; i < sav->arr->len; i++)
 		while(!(sav->arr->v[i] = rand() % ARR_MAX));
 
+	/* start sorting thread */
 	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 
-	/* main loop */
+/* main loop */
 	while(sav->status != STOP) {
 		check_events(&(sav->status)); 
 		if(sav->status == UPDATE) {

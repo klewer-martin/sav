@@ -3,11 +3,13 @@
 
 #include "util.h"
 
+#include <time.h>
 #include <SDL2/SDL.h>
 
 typedef struct {
 	Arr *arr;
-	size_t sel, cmp;
+	size_t sel, cmp, cmps, swps;
+	clock_t ti, tf;
 	status_t status;
 } SAV;
 

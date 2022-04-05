@@ -12,7 +12,11 @@
 #define CMP_COLOR	0x00FFFF00
 #define NORM_COLOR	0xFF000000
 
-#define FONT_SIZE	11
+#define FONT_SIZE	12
+/* #define FONT_NAME	"/usr/share/fonts/termite-style/Ubuntu.ttf" */
+#define FONT_NAME	"/home/mk/.local/share/fonts/VictorMono-Bold.ttf"
+#define FONT_COLOR	0xBBBBBB
+
 #define BAR_HEIGHT	14
 
 typedef struct {
