@@ -63,12 +63,13 @@ drw_status_bar(Drw *drw, SAV *sav) {
 
 	if((sav->status == RUN) || (sav->status == UPDATE)) {
 		/* sprintf(status_text, "Press SPACE to start sorting the array or ESC/q to quit"); */
-		sprintf(status_text, "SORTING (insertion sort)     C: %ld, S: %ld", sav->cmps, sav->swps);
+		sprintf(status_text, "SORTING (insertion sort)     L: %ld, C: %ld, S: %ld, I: %ld", 
+				sav->arr->len, sav->cmps, sav->swps, sav->its);
 		drw_text(drw, status_text, 0, drw->h - drw->font_size - 5);
 	} else if(sav->status == SORTED) {
-		sprintf(status_text, "(insertion sort) done in %.2fs, C: %ld, S: %ld",
+		sprintf(status_text, "SORTED (insertion sort) done in %.2fs, L: %ld, C: %ld, S: %ld, I: %ld",
 				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
-				sav->cmps, sav->swps);
+				sav->arr->len, sav->cmps, sav->swps, sav->its);
 
 		drw_text(drw, status_text, 0, drw->h - drw->font_size - 5);
 	}

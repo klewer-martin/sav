@@ -18,7 +18,7 @@ status_t SAV_New(SAV **sav) {
 	if((*sav = (SAV *)malloc(sizeof(SAV))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
-	(*sav)->sel = (*sav)->cmp = (*sav)->cmps = (*sav)->swps = 0;
+	(*sav)->sel = (*sav)->cmp = (*sav)->cmps = (*sav)->swps = (*sav)->its = 0;
 	(*sav)->status = RUN;
 
 	if(((*sav)->arr = (Arr *)malloc(sizeof(Arr))) == NULL)
@@ -46,6 +46,7 @@ routine_wrapper(void *arg) {
 	SAV *sav = (SAV *)arg;
 
 	insertion_sort(sav);
+	/* bubble_sort(sav); */
 
 	return NULL;
 }
@@ -72,7 +73,7 @@ main (void) {
 	/* start sorting thread */
 	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 
-/* main loop */
+	/* main loop */
 	while(sav->status != STOP) {
 		check_events(&(sav->status)); 
 		if(sav->status == UPDATE) {

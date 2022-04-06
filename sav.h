@@ -8,7 +8,7 @@
 
 typedef struct {
 	Arr *arr;
-	size_t sel, cmp, cmps, swps;
+	size_t sel, cmp, cmps, swps, its;
 	clock_t ti, tf;
 	status_t status;
 } SAV;

@@ -7,7 +7,7 @@
 #include "sav.h"
 #include "util.h"
 
-int bubble_sort(SAV *);
+void bubble_sort(SAV *);
 void insertion_sort(SAV *);
 
 #endif // __SORT_H__
