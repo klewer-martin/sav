@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ARR_LEN		100
-#define ARR_MAX		400
+#define ARR_LEN		150
+#define ARR_MAX		500
 
 #define X_BORDER	40
 #define Y_BORDER	40

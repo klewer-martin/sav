@@ -10,4 +10,8 @@
 void bubble_sort(SAV *);
 void insertion_sort(SAV *);
 
+void merge(SAV *, int, int, int);
+void merge_sort(SAV *, int, int);
+void merge_sort_wrapper(SAV *);
+
 #endif // __SORT_H__
