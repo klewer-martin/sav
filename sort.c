@@ -66,3 +66,67 @@ void bubble_sort(SAV *sav) {
 	sav->tf = clock();
 	if(sav->status != STOP) sav->status = SORTED;
 }
+
+void merge(SAV *sav, int low, int middle, int high) {
+	size_t n1, n2, i, j, k;
+
+	n1 = middle - low;
+	n2 = high - middle;
+
+	int B[n1], C[n2];
+
+	/* B holds middle low array */
+	for(i = low, j = 0; i < middle; i++, j++) 
+		B[j] = sav->arr->v[i];
+
+	/* C middle high part of the array */ 
+	for(i = middle, j = 0; i < high; i++, j++)
+		C[j] = sav->arr->v[i];
+
+	/* merge B1 and C1 in order */
+	for(k = low, i = j = 0; (k < high) && (i < n1) && (j < n2); k++) {
+		if(B[i] <= C[j]) sav->arr->v[k] = B[i++];
+		else sav->arr->v[k] = C[j++];
+
+		sav->sel = (k + 1);
+		sav->cmps += 1;
+		sav->its += 1;
+
+		wait_main_thread(&(sav->status));
+		if(sav->status == STOP) return;
+	}
+
+	while(i < n1)
+        sav->arr->v[k++] = B[i++];
+
+    while (j < n2)
+        sav->arr->v[k++] = C[j++];
+}
+
+void merge_sort(SAV *sav, int low, int high) {
+	if(sav == NULL) return;
+
+	int middle;
+
+	middle = ((high + low) / 2);
+	sav->its += 1;
+
+	if((high - low) > 1) {
+		/* sort the middle low portion of the array */
+		merge_sort(sav, low, middle);
+
+		/* sort the middle high portion of the array */
+		merge_sort(sav, middle, high);
+
+		/* merge both arrays ordered */
+		merge(sav, low, middle, high);
+	}
+}
+
+void merge_sort_wrapper(SAV *sav) {
+	sav->ti = clock();
+	merge_sort(sav, 0, sav->arr->len);
+	sav->tf = clock();
+	sav->sel = sav->arr->len + 1;
+	if(sav->status != STOP) sav->status = SORTED;
+}
