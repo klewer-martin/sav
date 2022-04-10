@@ -13,5 +13,4 @@ $ ./sav
 ```
 
 You can change the sorting algorithm by setting the varible "sel\_algo" in the main function
-
 (in a future this will be done by parsing command line arguments)
