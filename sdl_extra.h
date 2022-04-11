@@ -15,8 +15,10 @@
 /* } Sav; */
 
 #include "util.h"
+#include "drw.h"
 
-void check_events(status_t *status);
+/* void check_events(status_t *status); */
+void check_events(Drw *drw, SAV *sav);
 void setup(SDL_Window **win, SDL_Renderer **rend);
 void cleanup(SDL_Window *win, SDL_Renderer *rend);
 

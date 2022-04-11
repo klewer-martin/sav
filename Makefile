@@ -1,6 +1,6 @@
 CC := cc
 CLIBS := `sdl2-config --libs --cflags`
-CFLAGS := -lSDL2_ttf -lm -Werror -Wall -pedantic -ansi -std=c99 -g -pthread
+CFLAGS := -lSDL2_ttf -lm -Werror -pedantic -ansi -std=c99 -g -pthread
 SRCS := main.c sav.c util.c sort.c drw.c sdl_extra.c
 OBJS := $(SRCS:.c=.o)
 

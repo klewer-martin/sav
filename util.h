@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ARR_LEN		150
+#define ARR_LEN		120
 #define ARR_MAX		500
 
 #define X_BORDER	40
@@ -14,11 +14,15 @@
 #define RECT_WIDTH	6	
 
 typedef enum {
+	OK = 0,
 	RUN,
 	PAUSE,
 	UPDATE,
 	ERROR_MEMORY_ALLOC,
+	ERROR_OPENING_FONT,
+	ERROR_DRW,
 	SORTED,
+	RESTART,
 	STOP
 } status_t;
 
