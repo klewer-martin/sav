@@ -29,6 +29,13 @@ routine_wrapper(void *arg) {
 	return NULL;
 }
 
+void
+shuffle(Arr *arr) {
+	srand((unsigned int)time(NULL));
+	for(size_t i = 0; i < arr->len; i++)
+		while(!(arr->v[i] = rand() % ARR_MAX));
+}
+
 int
 main (void) {
 	SAV *sav;
@@ -37,16 +44,15 @@ main (void) {
 	SDL_Window *win;
 
 	pthread_t p1;
+	status_t st;
 
 	setup(&win, &rend);
 
-	SAV_New(&sav);
-	DRW_New(rend, win, &drw);
+	if((st = SAV_New(&sav)) != OK) goto end;
+	if((st = DRW_New(rend, win, &drw)) != OK) goto end;
 
 	/* assigns random values to array */
-	srand((unsigned int)time(NULL));
-	for(size_t i = 0; i < sav->arr->len; i++)
-		while(!(sav->arr->v[i] = rand() % ARR_MAX));
+	shuffle(sav->arr);
 
 	/* start sorting thread */
 	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
@@ -56,18 +62,28 @@ main (void) {
 
 	/* main loop */
 	while(sav->status != STOP) {
-		check_events(&(sav->status)); 
+		check_events(drw, sav);
 		if(sav->status == UPDATE) {
 			drw_array_graph(drw, sav);
 			sav->status = RUN;
 			SDL_RenderPresent(rend);
 		}
 		if(sav->status == SORTED) {
+			/* p1 ended */
 			drw_array_graph(drw, sav);
 			SDL_RenderPresent(rend);
 		}
+		if(sav->status == RESTART) {
+			/* this state can only be achived if p1 ended */
+			shuffle(sav->arr);
+			sav->status = RUN;
+
+			/* let's call p1 again */
+			pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
+		}
 	}
 
+end:
 	pthread_join(p1, NULL);
 
 	SAV_Destroy(sav);

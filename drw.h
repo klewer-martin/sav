@@ -19,21 +19,29 @@
 
 #define BAR_HEIGHT	14
 
+#define WIN_MIN_W	800
+#define WIN_MIN_H	600
+
+#define WINDOW_TITLE "SAV - Sorting Algorithms Visualized"
+
 typedef struct {
 	SDL_Renderer *rend;
 	SDL_Window *win;
 	SDL_Surface *text_surface;
 	SDL_Texture *text_texture;
 	SDL_Color text_color;
+	SDL_Rect bar_rect, bar_text_rect;
 	TTF_Font *font;
-	int w, h, font_size;
+	int w, h, font_size, bar_text_len, bar_border;
+	size_t x_border, y_border;
+	char *bar_text;
 } Drw;
 
 status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw);
 void DRW_Destroy(Drw *drw);
 
 void drw_element(SDL_Renderer *rend, int x, int y, int h);
-void drw_element_color(SDL_Renderer *rend, int x, int y, int h, unsigned int col);
+void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col);
 void drw_array_graph(Drw *drw, SAV *sav);
 void drw_status_bar(Drw *drw, SAV *sav);
 void drw_text(Drw *drw, char *text, int x, int y);

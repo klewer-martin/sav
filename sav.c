@@ -29,6 +29,8 @@ status_t SAV_New(SAV **sav) {
 }
 
 void SAV_Destroy(SAV *sav) {
+	if(sav == NULL) return;
+
 	free(sav->arr->v);
 	free(sav->arr);
 	free(sav);
