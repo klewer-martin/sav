@@ -75,6 +75,9 @@ void merge(SAV *sav, int low, int middle, int high) {
 
 	int B[n1], C[n2];
 
+	sav->B_used += n1;
+	sav->B_used += n2;
+
 	/* B holds middle low array */
 	for(i = low, j = 0; i < middle; i++, j++) 
 		B[j] = sav->arr->v[i];

@@ -67,10 +67,10 @@ drw_status_bar(Drw *drw, SAV *sav) {
 		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
 	} else if(sav->status == SORTED) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, I: %ld",
+				"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, I: %ld, extra storage used: %ld Bytes",
 				algo_strings[sav->sel_algo],
 				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
-				sav->arr->len, sav->cmps, sav->swps, sav->its);
+				sav->arr->len, sav->cmps, sav->swps, sav->its, sav->B_used);
 
 		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
 	}
@@ -125,7 +125,17 @@ status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw) {
 	else if((*drw)->h < WIN_MIN_H)
 		(*drw)->h = WIN_MIN_H;
 
-	(*drw)->bar_text_len = (*drw)->w / (*drw)->font_size;
+	{
+		int w_text, h_text;
+		TTF_SizeText(font,
+				"SORTED (XXXXXXXXXXs sort) done in XXX.Xs, L: XXXXX,\
+				C: XXXXXX, S: XXXXXX, I: XXXXXX, storage used: XXXXXX Bytes",
+				&w_text, &h_text);
+
+		(*drw)->bar_text_len = w_text;
+	}
+
+
 	(*drw)->bar_text = (char *)malloc(sizeof(char) * (*drw)->bar_text_len);
 	if((*drw)->bar_text == NULL) return ERROR_MEMORY_ALLOC;
 

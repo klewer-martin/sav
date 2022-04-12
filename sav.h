@@ -15,7 +15,7 @@ typedef enum {
 
 typedef struct {
 	Arr *arr;
-	size_t sel, cmp, cmps, swps, its;
+	size_t sel, cmp, cmps, swps, its, B_used;
 	clock_t ti, tf;
 	status_t status;
 	sort_t sel_algo;

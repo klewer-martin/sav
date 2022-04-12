@@ -58,7 +58,7 @@ main (void) {
 	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 
 	/* selecting the sorting algorithms */
-	sav->sel_algo = MERGE_SORT;
+	sav->sel_algo = INSERTION_SORT;
 
 	/* main loop */
 	while(sav->status != STOP) {
