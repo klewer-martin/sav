@@ -164,8 +164,9 @@ void
 quick_sort(SAV *sav, int low, int high) {
 	int pivot;
 
-	wait_main_thread(&(sav->status));
 	if(sav->status == STOP) return;
+	else if(sav->status == PAUSE)
+		wait_main_thread(&(sav->status));
 
 	if ((high - low) > 0) {
 		quick_sort_partition(sav, low, &pivot, high);

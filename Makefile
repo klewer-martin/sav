@@ -3,6 +3,7 @@ CLIBS := `sdl2-config --libs --cflags`
 CFLAGS := -lSDL2_ttf -lm -Werror -pedantic -ansi -std=c99 -g -pthread
 SRCS := main.c sav.c util.c sort.c drw.c sdl_extra.c
 OBJS := $(SRCS:.c=.o)
+LIBS := array.h status.h
 
 TARGET := sav
 
@@ -10,7 +11,7 @@ TARGET := sav
 
 all: $(TARGET) clean
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) $(HEADERS) $(LIBS)
 	$(CC) $(CLIBS) $(CFLAGS) -o $@ $^
 
 %.o: %.c

@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 #include "sav.h"
-#include "util.h"
 
 void bubble_sort(SAV *);
 void insertion_sort(SAV *);

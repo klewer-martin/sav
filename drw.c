@@ -38,7 +38,7 @@ drw_array_graph(Drw *drw, SAV *sav) {
 		else if(i == sav->cmp) drw_element_color(drw, x, h, sav->arr->v[i], CMP_COLOR);
 		else drw_element_color(drw, x, h, sav->arr->v[i], NORM_COLOR);
 	}
-	drw_status_bar(drw, sav);
+	/* drw_status_bar(drw, sav); */
 }
 
 void
@@ -77,7 +77,8 @@ drw_status_bar(Drw *drw, SAV *sav) {
 	memset(drw->bar_text, 0, sizeof(char) * drw->bar_text_len);
 }
 
-void drw_text(Drw *drw, char *text, int x, int y) {
+void
+drw_text(Drw *drw, char *text, int x, int y) {
 	drw->text_surface = TTF_RenderText_Blended(drw->font, text, drw->text_color);
 	drw->text_texture = SDL_CreateTextureFromSurface(drw->rend, drw->text_surface);
 
@@ -89,13 +90,22 @@ void drw_text(Drw *drw, char *text, int x, int y) {
 	SDL_RenderCopy(drw->rend, drw->text_texture, NULL, &drw->bar_text_rect);
 }
 
-status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw) {
+status_t
+Drw_new(Drw **drw) {
+	SDL_Renderer *rend;
+	SDL_Window *win;
+	TTF_Font *font;
+
 	if((*drw = (Drw *)malloc(sizeof(Drw))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
-	TTF_Font *font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
+	SDL_setup(&win, &rend);
+	(*drw)->rend = rend;
+	(*drw)->win = win;
 
-	if(!font) {
+	font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
+
+	if(font == NULL) {
 		fprintf(stderr, "TTF_OpenFont: %s\n", TTF_GetError());
 		return ERROR_OPENING_FONT;
 	}
@@ -145,9 +155,11 @@ status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw) {
 	return OK;
 }
 
-void DRW_Destroy(Drw *drw) {
+void
+Drw_destroy(Drw *drw) {
 	if(drw == NULL) return;
 
+	SDL_cleanup(drw->win, drw->rend);
 	TTF_CloseFont(drw->font);
 	free(drw->bar_text);
 	free(drw);

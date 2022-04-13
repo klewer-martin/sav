@@ -4,16 +4,16 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "sav.h"
+/* #include "sav.h" */
 #include "util.h"
-#include "sort.h"
+/* #include "sort.h" */
+#include "sdl_extra.h"
 
 #define SEL_COLOR	0x00FF0000 // RGBA (A not used rn)
 #define CMP_COLOR	0x00FFFF00
 #define NORM_COLOR	0xFF000000
 
 #define FONT_SIZE	12
-/* #define FONT_NAME	"/usr/share/fonts/termite-style/Ubuntu.ttf" */
 #define FONT_NAME	"/home/mk/.local/share/fonts/VictorMono-Bold.ttf"
 #define FONT_COLOR	0xBBBBBB
 
@@ -22,7 +22,10 @@
 #define WIN_MIN_W	800
 #define WIN_MIN_H	600
 
-#define WINDOW_TITLE "SAV - Sorting Algorithms Visualized"
+#define X_BORDER	40
+#define Y_BORDER	40
+#define TOP_BORDER	50
+#define RECT_WIDTH	5
 
 typedef struct {
 	SDL_Renderer *rend;
@@ -37,15 +40,14 @@ typedef struct {
 	char *bar_text;
 } Drw;
 
-status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw);
-void DRW_Destroy(Drw *drw);
+status_t Drw_new(Drw **drw);
+void Drw_destroy(Drw *drw);
 
 void drw_element(SDL_Renderer *rend, int x, int y, int h);
 void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col);
-void drw_array_graph(Drw *drw, SAV *sav);
-void drw_status_bar(Drw *drw, SAV *sav);
 void drw_text(Drw *drw, char *text, int x, int y);
 
-void loading_animation(Drw *drw, SAV *sav);
+/* void drw_array_graph(Drw *drw, SAV *sav); */
+/* void drw_status_bar(Drw *drw, SAV *sav); */
 
 #endif // __DRAW_H__

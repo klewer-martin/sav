@@ -1,10 +1,15 @@
 #ifndef __SAV_H__
 #define __SAV_H__
 
-#include "util.h"
-
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdbool.h>
 #include <time.h>
 #include <SDL2/SDL.h>
+
+#include "drw.h"
+#include "util.h"
+#include "array.h"
 
 typedef enum {
 	BUBBLE_SORT = 0,
@@ -24,7 +29,7 @@ typedef struct {
 
 extern char *algo_strings[SORT_MAX_ALGORITHMS];
 
-status_t SAV_New(SAV **sav);
-void SAV_Destroy(SAV *sav);
+status_t SAV_new(SAV **sav);
+void SAV_destroy(SAV *sav);
 
 #endif

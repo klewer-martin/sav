@@ -35,16 +35,12 @@ int
 main (void) {
 	SAV *sav;
 	Drw *drw;
-	SDL_Renderer *rend;
-	SDL_Window *win;
 
 	pthread_t p1;
 	status_t st;
 
-	setup(&win, &rend);
-
-	if((st = SAV_New(&sav)) != OK) goto end;
-	if((st = DRW_New(rend, win, &drw)) != OK) goto end;
+	if((st = SAV_new(&sav)) != OK) goto end;
+	if((st = Drw_new(&drw)) != OK) goto end;
 
 	/* assigns random values to array */
 	shuffle(sav->arr);
@@ -55,20 +51,19 @@ main (void) {
 	/* selecting the sorting algorithms */
 	sav->sel_algo = QUICK_SORT;
 
-	sav->status = RUN;
-
 	/* main loop */
+	sav->status = RUN;
 	while(sav->status != STOP) {
-		check_events(drw, sav);
+		/* check_events(drw, sav); */
 		if(sav->status == UPDATE) {
-			drw_array_graph(drw, sav);
+			/* drw_array_graph(drw, sav); */
 			sav->status = RUN;
-			SDL_RenderPresent(rend);
+			SDL_RenderPresent(drw->rend);
 		}
 		if(sav->status == SORTED) {
 			/* p1 ended */
-			drw_array_graph(drw, sav);
-			SDL_RenderPresent(rend);
+			/* drw_array_graph(drw, sav); */
+			SDL_RenderPresent(drw->rend);
 		}
 		if(sav->status == RESTART) {
 			/* this state can only be achived if p1 ended */
@@ -80,12 +75,10 @@ main (void) {
 		}
 	}
 
-end:
+	end:
 	pthread_join(p1, NULL);
 
-	SAV_Destroy(sav);
-	DRW_Destroy(drw);
-
-	cleanup(win, rend);
+	SAV_destroy(sav);
+	Drw_destroy(drw);
 	return 0;
 }
