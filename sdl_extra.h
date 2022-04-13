@@ -18,7 +18,6 @@
 
 status_t SDL_setup(SDL_Window **win, SDL_Renderer **rend);
 status_t SDL_cleanup(SDL_Window *win, SDL_Renderer *rend);
-status_t SDL_check_events(Drw *drw, SAV *sav);
 
 #endif
 

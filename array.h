@@ -11,4 +11,6 @@ typedef struct {
 	size_t len;
 } Arr;
 
+void shuffle(Arr *arr);
+
 #endif

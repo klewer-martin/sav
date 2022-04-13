@@ -50,4 +50,7 @@ void drw_text(Drw *drw, char *text, int x, int y);
 /* void drw_array_graph(Drw *drw, SAV *sav); */
 /* void drw_status_bar(Drw *drw, SAV *sav); */
 
+void drw_array_graph_sav_free(Drw *, Arr *);
+void drw_status_bar_sav_free(Drw *drw, SAV *sav);
+
 #endif // __DRAW_H__

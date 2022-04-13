@@ -25,7 +25,7 @@ typedef struct {
 	clock_t ti, tf;
 	status_t status;
 	sort_t sel_algo;
-} SAV;
+} SAV; // Sort?
 
 extern char *algo_strings[SORT_MAX_ALGORITHMS];
 

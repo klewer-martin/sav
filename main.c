@@ -5,6 +5,10 @@
 #include "sort.h"
 #include "util.h"
 #include "sdl_extra.h"
+#include "array.h"
+
+void check_events(Drw *, SAV *);
+void *routine_wrapper(void *);
 
 void *
 routine_wrapper(void *arg) {
@@ -22,13 +26,6 @@ routine_wrapper(void *arg) {
 		}
 	}
 	return NULL;
-}
-
-void
-shuffle(Arr *arr) {
-	srand((unsigned int)time(NULL));
-	for(size_t i = 0; i < arr->len; i++)
-		while(!(arr->v[i] = rand() % ARR_MAX));
 }
 
 int
@@ -82,3 +79,46 @@ main (void) {
 	Drw_destroy(drw);
 	return 0;
 }
+
+void
+check_events(Drw *drw, SAV *sav) {
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		switch(event.type) {
+		case SDL_QUIT: sav->status = STOP; break;
+		case SDL_KEYDOWN:
+			switch(event.key.keysym.scancode) {
+			/* case SDL_SCANCODE_EQUALS: */ 
+			/* 	if(speed > SPEED_MAX) speed -= SPEED_STEP; */
+			/* 	break; */
+			/* case SDL_SCANCODE_MINUS: */
+			/* 	if(speed < SPEED_MIN) speed += SPEED_STEP; */
+			/* 	break; */
+			/* case SDL_SCANCODE_P: */
+			/* 	if(status == PAUSE) *status = RUN; */
+			/* 	else *status = PAUSE; */
+			/* 	break; */
+			case SDL_SCANCODE_R:
+				if(sav->status == SORTED) sav->status = RESTART;
+				else break;
+			default: break;
+		   }
+		case SDL_WINDOWEVENT:
+			switch(event.window.event) {
+			case SDL_WINDOWEVENT_RESIZED:
+				SDL_Log("Window resized to %dx%d", event.window.data1, event.window.data2);
+				drw->w = event.window.data1;
+				drw->h = event.window.data2;
+
+				/* set new window borders */
+				drw->x_border = (drw->w / 2) - ((sav->arr->len * RECT_WIDTH) / 2);
+				drw->y_border = (drw->h / 2) - (ARR_MAX / 2);
+
+				break;
+			default: break;
+		   }
+		default: break;
+		}
+	}
+}
+
