@@ -60,17 +60,17 @@ drw_status_bar(Drw *drw, SAV *sav) {
 	if(sav->status == UPDATE) {
 		/* sprintf(drw->bar_text, "Press SPACE to start sorting the array or ESC/q to quit"); */
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTING (%s sort)     L: %ld, C: %ld, S: %ld, I: %ld", 
+				"SORTING (%s sort)     L: %ld, C: %ld, S: %ld",
 				algo_strings[sav->sel_algo], sav->arr->len, sav->cmps,
-				sav->swps, sav->its);
+				sav->swps);
 
 		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
 	} else if(sav->status == SORTED) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, I: %ld, extra storage used: %ld Bytes",
+				"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
 				algo_strings[sav->sel_algo],
 				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
-				sav->arr->len, sav->cmps, sav->swps, sav->its, sav->B_used);
+				sav->arr->len, sav->cmps, sav->swps, sav->B_used);
 
 		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
 	}

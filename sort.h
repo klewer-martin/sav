@@ -14,4 +14,8 @@ void merge(SAV *, int, int, int);
 void merge_sort(SAV *, int, int);
 void merge_sort_wrapper(SAV *);
 
+void quick_sort_wrapper(SAV *sav);
+void quick_sort(SAV *sav, int low, int high);
+void quick_sort_partition(SAV *sav, int low, int *middle, int high);
+
 #endif // __SORT_H__
