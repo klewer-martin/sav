@@ -42,7 +42,8 @@ insertion_sort(SAV *sav) {
 	if(sav->status != STOP) sav->status = SORTED;
 }
 
-void bubble_sort(SAV *sav) {
+void
+bubble_sort(SAV *sav) {
 	size_t i, j;
 
 	sav->ti = clock();
@@ -67,13 +68,17 @@ void bubble_sort(SAV *sav) {
 	if(sav->status != STOP) sav->status = SORTED;
 }
 
-void merge(SAV *sav, int low, int middle, int high) {
+void
+merge(SAV *sav, int low, int middle, int high) {
 	size_t n1, n2, i, j, k;
 
 	n1 = middle - low;
 	n2 = high - middle;
 
 	int B[n1], C[n2];
+
+	sav->B_used += n1;
+	sav->B_used += n2;
 
 	/* B holds middle low array */
 	for(i = low, j = 0; i < middle; i++, j++) 
@@ -103,7 +108,8 @@ void merge(SAV *sav, int low, int middle, int high) {
         sav->arr->v[k++] = C[j++];
 }
 
-void merge_sort(SAV *sav, int low, int high) {
+void
+merge_sort(SAV *sav, int low, int high) {
 	if(sav == NULL) return;
 
 	int middle;
@@ -129,4 +135,49 @@ void merge_sort_wrapper(SAV *sav) {
 	sav->tf = clock();
 	sav->sel = sav->arr->len + 1;
 	if(sav->status != STOP) sav->status = SORTED;
+}
+
+void
+quick_sort_partition(SAV *sav, int low, int *middle, int high) {
+	int i, j, pivot;
+
+	pivot = high;
+	sav->sel = pivot;
+	printf("SORT: pivot: %d\n", pivot);
+
+	for(i = j = low; j < high; j++, sav->cmps += 1) {
+		if(sav->arr->v[j] < sav->arr->v[pivot]) {
+			swap(&(sav->arr->v[i++]), &(sav->arr->v[j]));
+			sav->swps += 1;
+		}
+
+		wait_main_thread(&(sav->status));
+		if(sav->status == STOP) return;
+	}
+
+	swap(&(sav->arr->v[i]), &(sav->arr->v[pivot]));
+	sav->swps += 1;
+	*middle = i;
+}
+
+void
+quick_sort(SAV *sav, int low, int high) {
+	int pivot;
+
+	wait_main_thread(&(sav->status));
+	if(sav->status == STOP) return;
+
+	if ((high - low) > 0) {
+		quick_sort_partition(sav, low, &pivot, high);
+		quick_sort(sav, low, pivot - 1);
+		quick_sort(sav, pivot + 1, high);
+	}
+}
+
+void
+quick_sort_wrapper(SAV *sav) {
+	sav->ti = clock();
+	quick_sort(sav, 0, sav->arr->len - 1);
+	sav->status = SORTED;
+	sav->tf = clock();
 }

@@ -6,12 +6,6 @@
 #include "util.h"
 #include "sdl_extra.h"
 
-char *algo_strings[SORT_MAX_ALGORITHMS] = {
-	"bubble",
-	"insertion",
-	"merge"
-};
-
 void *
 routine_wrapper(void *arg) {
 	SAV *sav = (SAV *)arg;
@@ -20,6 +14,7 @@ routine_wrapper(void *arg) {
 		case BUBBLE_SORT:  bubble_sort(sav); break;
 		case INSERTION_SORT: insertion_sort(sav); break;
 		case MERGE_SORT: merge_sort_wrapper(sav); break;
+		case QUICK_SORT: quick_sort_wrapper(sav); break;
 		default:  {
 			fprintf(stderr, "\"sel_algo\" not set. exiting\n");
 			sav->status = STOP;
@@ -58,7 +53,9 @@ main (void) {
 	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 
 	/* selecting the sorting algorithms */
-	sav->sel_algo = MERGE_SORT;
+	sav->sel_algo = QUICK_SORT;
+
+	sav->status = RUN;
 
 	/* main loop */
 	while(sav->status != STOP) {

@@ -5,11 +5,18 @@
 #include "drw.h"
 #include "util.h"
 
+char *algo_strings[SORT_MAX_ALGORITHMS] = {
+	"bubble",
+	"insertion",
+	"merge",
+	"quick"
+};
+
 status_t SAV_New(SAV **sav) {
 	if((*sav = (SAV *)malloc(sizeof(SAV))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
-	(*sav)->sel = (*sav)->cmps = (*sav)->swps = (*sav)->its = 0;
+	(*sav)->sel = (*sav)->cmps = (*sav)->swps = (*sav)->its = (*sav)->B_used = 0;
 	(*sav)->cmp = ARR_MAX + 1;
 	(*sav)->status = RUN;
 	(*sav)->sel_algo = SORT_MAX_ALGORITHMS;

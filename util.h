@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ARR_LEN		120
+#define ARR_LEN		128
 #define ARR_MAX		500
 
 #define X_BORDER	40
 #define Y_BORDER	40
 #define TOP_BORDER	50
 
-#define RECT_WIDTH	6	
+#define RECT_WIDTH	5
 
 typedef enum {
 	OK = 0,
