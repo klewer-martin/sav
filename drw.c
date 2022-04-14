@@ -57,27 +57,38 @@ drw_status_bar(Drw *drw, SAV *sav) {
 	SDL_SetRenderDrawColor(drw->rend, 0, 0, 0, 0); /* RGBA */
 	SDL_RenderFillRect(drw->rend, &rect);
 
-	if(sav->status == UPDATE) {
-		/* sprintf(drw->bar_text, "Press SPACE to start sorting the array or ESC/q to quit"); */
-		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTING (%s sort)     L: %ld, C: %ld, S: %ld",
-				algo_strings[sav->sel_algo], sav->arr->len, sav->cmps,
-				sav->swps);
-
-		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
-	} else if(sav->status == SORTED) {
-		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
-				algo_strings[sav->sel_algo],
-				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
-				sav->arr->len, sav->cmps, sav->swps, sav->B_used);
-
+	if((sav->status == RUN) || (sav->status == UPDATE) || (sav->status == START)) {
+		if(sav->sort_status == SORTED) {
+			snprintf(drw->bar_text, drw->bar_text_len - 2,
+					"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
+					algo_strings[sav->sort_algo],
+					(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
+					sav->arr->len, sav->cmps, sav->swps, sav->B_used);
+		} else if(sav->sort_status == PAUSE) {
+			if(sav->status == START) {
+				snprintf(drw->bar_text, drw->bar_text_len - 2,
+						"Welcome to sorting algorithms visualized - (%s sort selected) press SPACE to start sorting",
+						algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
+						sav->swps);
+			} else {
+				snprintf(drw->bar_text, drw->bar_text_len - 2,
+						"PAUSED (%s sort) press SPACE to resume",
+						algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
+						sav->swps);
+			}
+		} else {
+			snprintf(drw->bar_text, drw->bar_text_len - 2,
+					"SORTING (%s sort)     L: %ld, C: %ld, S: %ld",
+					algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
+					sav->swps);
+		}
 		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
 	}
 	memset(drw->bar_text, 0, sizeof(char) * drw->bar_text_len);
 }
 
-void drw_text(Drw *drw, char *text, int x, int y) {
+void
+drw_text(Drw *drw, char *text, int x, int y) {
 	drw->text_surface = TTF_RenderText_Blended(drw->font, text, drw->text_color);
 	drw->text_texture = SDL_CreateTextureFromSurface(drw->rend, drw->text_surface);
 
@@ -89,13 +100,22 @@ void drw_text(Drw *drw, char *text, int x, int y) {
 	SDL_RenderCopy(drw->rend, drw->text_texture, NULL, &drw->bar_text_rect);
 }
 
-status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw) {
+status_t
+Drw_new(Drw **drw) {
+	SDL_Renderer *rend;
+	SDL_Window *win;
+	TTF_Font *font;
+
 	if((*drw = (Drw *)malloc(sizeof(Drw))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
-	TTF_Font *font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
+	SDL_setup(&win, &rend);
+	(*drw)->rend = rend;
+	(*drw)->win = win;
 
-	if(!font) {
+	font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
+
+	if(font == NULL) {
 		fprintf(stderr, "TTF_OpenFont: %s\n", TTF_GetError());
 		return ERROR_OPENING_FONT;
 	}
@@ -145,10 +165,12 @@ status_t DRW_New(SDL_Renderer *rend, SDL_Window *win, Drw **drw) {
 	return OK;
 }
 
-void DRW_Destroy(Drw *drw) {
+void
+Drw_destroy(Drw *drw) {
 	if(drw == NULL) return;
 
 	TTF_CloseFont(drw->font);
+	SDL_cleanup(drw->win, drw->rend);
 	free(drw->bar_text);
 	free(drw);
 }

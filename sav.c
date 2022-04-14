@@ -1,9 +1,4 @@
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdbool.h>
-
-#include "drw.h"
-#include "util.h"
+#include "sav.h"
 
 char *algo_strings[SORT_MAX_ALGORITHMS] = {
 	"bubble",
@@ -12,14 +7,16 @@ char *algo_strings[SORT_MAX_ALGORITHMS] = {
 	"quick"
 };
 
-status_t SAV_New(SAV **sav) {
+status_t
+SAV_new(SAV **sav) {
 	if((*sav = (SAV *)malloc(sizeof(SAV))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
-	(*sav)->sel = (*sav)->cmps = (*sav)->swps = (*sav)->its = (*sav)->B_used = 0;
-	(*sav)->cmp = ARR_MAX + 1;
+	(*sav)->sel = (*sav)->cmp = ARR_MAX + 1;
+	(*sav)->cmps = (*sav)->swps = (*sav)->its = (*sav)->B_used = 0;
 	(*sav)->status = RUN;
-	(*sav)->sel_algo = SORT_MAX_ALGORITHMS;
+	(*sav)->sort_status = PAUSE;
+	(*sav)->sort_algo = SORT_MAX_ALGORITHMS;
 
 	if(((*sav)->arr = (Arr *)malloc(sizeof(Arr))) == NULL)
 		return ERROR_MEMORY_ALLOC;
@@ -35,7 +32,8 @@ status_t SAV_New(SAV **sav) {
 	return 0;
 }
 
-void SAV_Destroy(SAV *sav) {
+void
+SAV_destroy(SAV *sav) {
 	if(sav == NULL) return;
 
 	free(sav->arr->v);
