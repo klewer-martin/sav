@@ -12,6 +12,7 @@ typedef enum {
 	ERROR_NULL_POINTER,
 	ERROR_DRW,
 	SORTED,
+	START,
 	RESTART,
 	STOP
 } status_t;

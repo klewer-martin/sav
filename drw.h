@@ -4,9 +4,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-/* #include "sav.h" */
+#include "sav.h"
 #include "util.h"
-/* #include "sort.h" */
 #include "sdl_extra.h"
 
 #define SEL_COLOR	0x00FF0000 // RGBA (A not used rn)
@@ -47,10 +46,7 @@ void drw_element(SDL_Renderer *rend, int x, int y, int h);
 void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col);
 void drw_text(Drw *drw, char *text, int x, int y);
 
-/* void drw_array_graph(Drw *drw, SAV *sav); */
-/* void drw_status_bar(Drw *drw, SAV *sav); */
-
-void drw_array_graph_sav_free(Drw *, Arr *);
-void drw_status_bar_sav_free(Drw *drw, SAV *sav);
+void drw_array_graph(Drw *drw, SAV *sav);
+void drw_status_bar(Drw *drw, SAV *sav);
 
 #endif // __DRAW_H__

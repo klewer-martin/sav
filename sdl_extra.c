@@ -12,15 +12,15 @@ SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
 		SDL_WINDOWPOS_UNDEFINED,
 		0,
 		0,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_UTILITY
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_UTILITY
     );
 
 	*rend = SDL_CreateRenderer(*win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	/* TODO: return error codes */
-	if (*win == NULL) return ERROR_NULL_POINTER;
-	else if (*rend == NULL) return ERROR_NULL_POINTER;
-	else if(TTF_Init() == -1) return ERROR_SDL_FONT_INIT;
+	if ((*win == NULL) || (rend == NULL))
+		return ERROR_NULL_POINTER;
+	else if(TTF_Init() == -1)
+		return ERROR_SDL_FONT_INIT;
 
 	SDL_SetRenderDrawColor(*rend, 32, 32, 32, 0);
 	SDL_RenderClear(*rend);
@@ -37,7 +37,7 @@ SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
 
 status_t
 SDL_cleanup(SDL_Window *win, SDL_Renderer *rend) {
-	if(win == NULL || rend == NULL)
+	if((win == NULL) || (rend == NULL))
 		return ERROR_NULL_POINTER;
 
 	SDL_DestroyRenderer(rend);

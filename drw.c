@@ -38,7 +38,7 @@ drw_array_graph(Drw *drw, SAV *sav) {
 		else if(i == sav->cmp) drw_element_color(drw, x, h, sav->arr->v[i], CMP_COLOR);
 		else drw_element_color(drw, x, h, sav->arr->v[i], NORM_COLOR);
 	}
-	/* drw_status_bar(drw, sav); */
+	drw_status_bar(drw, sav);
 }
 
 void
@@ -57,21 +57,31 @@ drw_status_bar(Drw *drw, SAV *sav) {
 	SDL_SetRenderDrawColor(drw->rend, 0, 0, 0, 0); /* RGBA */
 	SDL_RenderFillRect(drw->rend, &rect);
 
-	if(sav->status == UPDATE) {
-		/* sprintf(drw->bar_text, "Press SPACE to start sorting the array or ESC/q to quit"); */
-		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTING (%s sort)     L: %ld, C: %ld, S: %ld",
-				algo_strings[sav->sel_algo], sav->arr->len, sav->cmps,
-				sav->swps);
-
-		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
-	} else if(sav->status == SORTED) {
-		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
-				algo_strings[sav->sel_algo],
-				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
-				sav->arr->len, sav->cmps, sav->swps, sav->B_used);
-
+	if((sav->status == RUN) || (sav->status == UPDATE) || (sav->status == START)) {
+		if(sav->sort_status == SORTED) {
+			snprintf(drw->bar_text, drw->bar_text_len - 2,
+					"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
+					algo_strings[sav->sort_algo],
+					(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
+					sav->arr->len, sav->cmps, sav->swps, sav->B_used);
+		} else if(sav->sort_status == PAUSE) {
+			if(sav->status == START) {
+				snprintf(drw->bar_text, drw->bar_text_len - 2,
+						"Welcome to sorting algorithms visualized - (%s sort selected) press SPACE to start sorting",
+						algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
+						sav->swps);
+			} else {
+				snprintf(drw->bar_text, drw->bar_text_len - 2,
+						"PAUSED (%s sort) press SPACE to resume",
+						algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
+						sav->swps);
+			}
+		} else {
+			snprintf(drw->bar_text, drw->bar_text_len - 2,
+					"SORTING (%s sort)     L: %ld, C: %ld, S: %ld",
+					algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
+					sav->swps);
+		}
 		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
 	}
 	memset(drw->bar_text, 0, sizeof(char) * drw->bar_text_len);
@@ -159,61 +169,8 @@ void
 Drw_destroy(Drw *drw) {
 	if(drw == NULL) return;
 
-	SDL_cleanup(drw->win, drw->rend);
 	TTF_CloseFont(drw->font);
+	SDL_cleanup(drw->win, drw->rend);
 	free(drw->bar_text);
 	free(drw);
-}
-
-void drw_array_graph_sav_free(Drw *drw, Arr *arr) {
-	int x, w, h;
-
-	SDL_GetWindowSize(drw->win, &w, &h);
-
-	SDL_SetRenderDrawColor(drw->rend, 29, 28, 28, 0);
-	SDL_RenderClear(drw->rend);
-
-	size_t i;
-	for(i = x = 0; i < arr->len; i++, x += RECT_WIDTH) {
-		if(i == sav->sel) drw_element_color(drw, x, h, arr->v[i], SEL_COLOR);
-		else if(i == sav->cmp) drw_element_color(drw, x, h, arr->v[i], CMP_COLOR);
-		else drw_element_color(drw, x, h, arr->v[i], NORM_COLOR);
-	}
-	/* drw_status_bar(drw, sav); */
-}
-
-void
-void drw_status_bar_sav_free(Drw *drw, SAV *sav) {
-	SDL_Rect rect;
-	int bar_border = 2;
-
-	rect.x = bar_border; /* top left + x */
-	rect.y = drw->h - bar_border; /* top left + y, (y < 0) */
-	rect.w = drw->w - (2 * bar_border); /* fixed width */
-	rect.h = -BAR_HEIGHT;
-
-	SDL_RenderDrawRect(drw->rend, &rect);
-
-	/* TODO: Make a variable to store statusbar background color */
-	SDL_SetRenderDrawColor(drw->rend, 0, 0, 0, 0); /* RGBA */
-	SDL_RenderFillRect(drw->rend, &rect);
-
-	if(sav->status == UPDATE) {
-		/* sprintf(drw->bar_text, "Press SPACE to start sorting the array or ESC/q to quit"); */
-		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTING (%s sort)     L: %ld, C: %ld, S: %ld",
-				algo_strings[sav->sel_algo], sav->arr->len, sav->cmps,
-				sav->swps);
-
-		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
-	} else if(sav->status == SORTED) {
-		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
-				algo_strings[sav->sel_algo],
-				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
-				sav->arr->len, sav->cmps, sav->swps, sav->B_used);
-
-		drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
-	}
-	memset(drw->bar_text, 0, sizeof(char) * drw->bar_text_len);
 }

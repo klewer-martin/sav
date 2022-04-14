@@ -14,7 +14,7 @@
 #define TOP_BORDER	50
 #define RECT_WIDTH	5
 
-#define WIN_TITLE "SAV - Sorting Algorithms Visualized"
+#define WIN_TITLE "SAV: Sorting Algorithms Visualized"
 
 status_t SDL_setup(SDL_Window **win, SDL_Renderer **rend);
 status_t SDL_cleanup(SDL_Window *win, SDL_Renderer *rend);

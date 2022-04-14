@@ -7,7 +7,6 @@
 #include <time.h>
 #include <SDL2/SDL.h>
 
-#include "drw.h"
 #include "util.h"
 #include "array.h"
 
@@ -24,8 +23,9 @@ typedef struct {
 	size_t sel, cmp, cmps, swps, its, B_used;
 	clock_t ti, tf;
 	status_t status;
-	sort_t sel_algo;
-} SAV; // Sort?
+	status_t sort_status;
+	sort_t sort_algo;
+} SAV; 
 
 extern char *algo_strings[SORT_MAX_ALGORITHMS];
 

@@ -14,13 +14,13 @@ void *
 routine_wrapper(void *arg) {
 	SAV *sav = (SAV *)arg;
 
-	switch(sav->sel_algo) {
+	switch(sav->sort_algo) {
 		case BUBBLE_SORT:  bubble_sort(sav); break;
 		case INSERTION_SORT: insertion_sort(sav); break;
 		case MERGE_SORT: merge_sort_wrapper(sav); break;
 		case QUICK_SORT: quick_sort_wrapper(sav); break;
 		default:  {
-			fprintf(stderr, "\"sel_algo\" not set. exiting\n");
+			fprintf(stderr, "\"sort_algo\" not set. exiting\n");
 			sav->status = STOP;
 			break;
 		}
@@ -42,30 +42,29 @@ main (void) {
 	/* assigns random values to array */
 	shuffle(sav->arr);
 
+	/* selecting the sorting algorithms */
+	sav->sort_algo = BUBBLE_SORT;
+
 	/* start sorting thread */
 	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 
-	/* selecting the sorting algorithms */
-	sav->sel_algo = QUICK_SORT;
+
+	sav->status = START;
+	sav->sort_status = PAUSE;
 
 	/* main loop */
-	sav->status = RUN;
 	while(sav->status != STOP) {
-		/* check_events(drw, sav); */
-		if(sav->status == UPDATE) {
-			/* drw_array_graph(drw, sav); */
-			sav->status = RUN;
-			SDL_RenderPresent(drw->rend);
-		}
-		if(sav->status == SORTED) {
-			/* p1 ended */
-			/* drw_array_graph(drw, sav); */
-			SDL_RenderPresent(drw->rend);
-		}
-		if(sav->status == RESTART) {
+		check_events(drw, sav);
+
+		drw_array_graph(drw, sav);
+		drw_status_bar(drw, sav);
+		SDL_RenderPresent(drw->rend);
+
+		if((sav->sort_status == SORTED) && (sav->status == RESTART)) {
 			/* this state can only be achived if p1 ended */
 			shuffle(sav->arr);
 			sav->status = RUN;
+			sav->sort_status = RUN;
 
 			/* let's call p1 again */
 			pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
@@ -85,22 +84,24 @@ check_events(Drw *drw, SAV *sav) {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		switch(event.type) {
-		case SDL_QUIT: sav->status = STOP; break;
+		case SDL_QUIT:
+			sav->status = sav->sort_status = STOP;
+			break;
 		case SDL_KEYDOWN:
 			switch(event.key.keysym.scancode) {
-			/* case SDL_SCANCODE_EQUALS: */ 
-			/* 	if(speed > SPEED_MAX) speed -= SPEED_STEP; */
-			/* 	break; */
-			/* case SDL_SCANCODE_MINUS: */
-			/* 	if(speed < SPEED_MIN) speed += SPEED_STEP; */
-			/* 	break; */
-			/* case SDL_SCANCODE_P: */
-			/* 	if(status == PAUSE) *status = RUN; */
-			/* 	else *status = PAUSE; */
-			/* 	break; */
 			case SDL_SCANCODE_R:
-				if(sav->status == SORTED) sav->status = RESTART;
-				else break;
+				if(sav->sort_status == SORTED) sav->status = RESTART;
+				break;
+			/* case SDL_SCANCODE_S: */
+			/* 	shuffle(sav->arr); */
+			/* 	break; */
+			case SDL_SCANCODE_SPACE:
+				printf("status: %d, sort_status: %d\n", sav->status, sav->sort_status);
+				/* if(sav->status == START) sav->status = sav->sort_status = RUN; */
+				if(sav->sort_status == PAUSE) sav->status = sav->sort_status = RUN;
+				else if(sav->sort_status == RUN) sav->sort_status = PAUSE;
+
+				break;
 			default: break;
 		   }
 		case SDL_WINDOWEVENT:

@@ -2,10 +2,10 @@
 
 void
 wait_main_thread(status_t *st) {
-	if(*st != STOP) *st = UPDATE;
+	if((*st != STOP) && (*st != PAUSE)) *st = UPDATE;
 
 	/* wait 'til main thread changes st value to RUN */
-	while(*st == UPDATE);
+	while((*st == UPDATE) || (*st == PAUSE));
 }
 
 void
