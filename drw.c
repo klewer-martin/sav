@@ -1,7 +1,6 @@
 #include "drw.h"
 
-void
-drw_element_color(Drw *drw, int x, int y, int h, unsigned int col) {
+void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col) {
 	SDL_Rect rect;
 	unsigned char r, g, b, a;
 
@@ -23,8 +22,7 @@ drw_element_color(Drw *drw, int x, int y, int h, unsigned int col) {
 	SDL_RenderDrawLine(drw->rend, x + drw->x_border, y - drw->y_border, x + drw->x_border, y - drw->y_border - h);
 }
 
-void
-drw_array_graph(Drw *drw, SAV *sav) {
+void drw_array_graph(Drw *drw, SAV *sav) {
 	int x, w, h;
 
 	SDL_GetWindowSize(drw->win, &w, &h);
@@ -41,8 +39,7 @@ drw_array_graph(Drw *drw, SAV *sav) {
 	drw_status_bar(drw, sav);
 }
 
-void
-drw_status_bar(Drw *drw, SAV *sav) {
+void drw_status_bar(Drw *drw, SAV *sav) {
 	SDL_Rect rect;
 	int bar_border = 2;
 
@@ -57,7 +54,7 @@ drw_status_bar(Drw *drw, SAV *sav) {
 	SDL_SetRenderDrawColor(drw->rend, 0, 0, 0, 0); /* RGBA */
 	SDL_RenderFillRect(drw->rend, &rect);
 
-	if((sav->status == RUN) || (sav->status == UPDATE) || (sav->status == START)) {
+	if((sav->status == RUN) || (sav->status == UPDATE) || (sav->status == START) || sav->status == WELCOME) {
 		if(sav->sort_status == SORTED) {
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
 					"SORTED (%s sort) done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
@@ -66,6 +63,11 @@ drw_status_bar(Drw *drw, SAV *sav) {
 					sav->arr->len, sav->cmps, sav->swps, sav->B_used);
 		} else if(sav->sort_status == PAUSE) {
 			if(sav->status == START) {
+				snprintf(drw->bar_text, drw->bar_text_len - 2,
+						"(%s sort selected) press SPACE to start sorting",
+						algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
+						sav->swps);
+			} else if(sav->status == WELCOME) {
 				snprintf(drw->bar_text, drw->bar_text_len - 2,
 						"Welcome to sorting algorithms visualized - (%s sort selected) press SPACE to start sorting",
 						algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
@@ -87,8 +89,7 @@ drw_status_bar(Drw *drw, SAV *sav) {
 	memset(drw->bar_text, 0, sizeof(char) * drw->bar_text_len);
 }
 
-void
-drw_text(Drw *drw, char *text, int x, int y) {
+void drw_text(Drw *drw, char *text, int x, int y) {
 	drw->text_surface = TTF_RenderText_Blended(drw->font, text, drw->text_color);
 	drw->text_texture = SDL_CreateTextureFromSurface(drw->rend, drw->text_surface);
 
@@ -100,8 +101,7 @@ drw_text(Drw *drw, char *text, int x, int y) {
 	SDL_RenderCopy(drw->rend, drw->text_texture, NULL, &drw->bar_text_rect);
 }
 
-status_t
-Drw_new(Drw **drw) {
+status_t Drw_new(Drw **drw) {
 	SDL_Renderer *rend;
 	SDL_Window *win;
 	TTF_Font *font;
@@ -165,8 +165,7 @@ Drw_new(Drw **drw) {
 	return OK;
 }
 
-void
-Drw_destroy(Drw *drw) {
+void Drw_destroy(Drw *drw) {
 	if(drw == NULL) return;
 
 	TTF_CloseFont(drw->font);

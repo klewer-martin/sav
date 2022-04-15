@@ -11,11 +11,11 @@
 #include "array.h"
 
 typedef enum {
-	BUBBLE_SORT = 0,
+	BUBBLE_SORT,
 	INSERTION_SORT,
 	MERGE_SORT,
 	QUICK_SORT,
-	SORT_MAX_ALGORITHMS
+	ALGORITHMS_COUNT
 } sort_t;
 
 typedef struct {
@@ -25,9 +25,7 @@ typedef struct {
 	status_t status;
 	status_t sort_status;
 	sort_t sort_algo;
-} SAV; 
-
-extern char *algo_strings[SORT_MAX_ALGORITHMS];
+} SAV;
 
 status_t SAV_new(SAV **sav);
 void SAV_destroy(SAV *sav);

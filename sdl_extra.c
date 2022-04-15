@@ -1,7 +1,6 @@
 #include "sdl_extra.h"
 
-status_t
-SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
+status_t SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
 	int min_w, min_h;
 
 	SDL_Init(SDL_INIT_VIDEO);
@@ -35,8 +34,7 @@ SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
 	return OK;
 }
 
-status_t
-SDL_cleanup(SDL_Window *win, SDL_Renderer *rend) {
+status_t SDL_cleanup(SDL_Window *win, SDL_Renderer *rend) {
 	if((win == NULL) || (rend == NULL))
 		return ERROR_NULL_POINTER;
 

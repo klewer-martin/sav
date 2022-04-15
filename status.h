@@ -14,6 +14,7 @@ typedef enum {
 	SORTED,
 	START,
 	RESTART,
+	WELCOME,
 	STOP
 } status_t;
 
