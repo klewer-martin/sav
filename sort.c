@@ -142,11 +142,8 @@ void merge(SAV *sav, int low, int middle, int high) {
 	}
 	end:
 
-	while(i < n1)
-        sav->arr->v[k++] = B[i++];
-
-    while (j < n2)
-        sav->arr->v[k++] = C[j++];
+	while(i < n1) sav->arr->v[k++] = B[i++];
+    while(j < n2) sav->arr->v[k++] = C[j++];
 }
 
 void merge_sort(SAV *sav, int low, int high) {

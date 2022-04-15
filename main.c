@@ -9,6 +9,8 @@
 
 #define WELCOME_MSG_TIME 5
 
+/* TODO: support restart even if the sorting algorithm didn't finish */
+
 void check_events(Drw *, SAV *);
 void *routine_wrapper(void *);
 
@@ -40,6 +42,7 @@ int main (void) {
 	/* selecting the sorting algorithms */
 	sav->sort_algo = QUICK_SORT;
 
+	/* TODO: this thread should be called if the user wants to begin sorting the array */
 	/* start sorting thread */
 	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 
@@ -50,14 +53,13 @@ int main (void) {
 	/* main loop */
 	while(sav->status != STOP) {
 		check_events(drw, sav);
+		drw_array_graph(drw, sav);
+		drw_status_bar(drw, sav);
+		SDL_RenderPresent(drw->rend);
 
 		if(sav->status == WELCOME)
 			if((((tc = clock()) - ti) / CLOCKS_PER_SEC) > WELCOME_MSG_TIME)
 				sav->status = START;
-
-		drw_array_graph(drw, sav);
-		drw_status_bar(drw, sav);
-		SDL_RenderPresent(drw->rend);
 
 		if((sav->sort_status == SORTED) && (sav->status == RESTART)) {
 			/* this state can only be achived if p1 ended */
@@ -69,6 +71,7 @@ int main (void) {
 			pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 		}
 	}
+
 	end:
 	pthread_join(p1, NULL);
 
