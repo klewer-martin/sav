@@ -7,6 +7,7 @@
 #include "sav.h"
 #include "util.h"
 #include "sdl_extra.h"
+#include "sort.h"
 
 #define SEL_COLOR	0x00FF0000 // RGBA (A not used rn)
 #define CMP_COLOR	0x00FFFF00
@@ -49,4 +50,4 @@ void drw_text(Drw *drw, char *text, int x, int y);
 void drw_array_graph(Drw *drw, SAV *sav);
 void drw_status_bar(Drw *drw, SAV *sav);
 
-#endif // __DRAW_H__
+#endif

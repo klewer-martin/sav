@@ -1,14 +1,6 @@
 #include "sav.h"
 
-char *algo_strings[SORT_MAX_ALGORITHMS] = {
-	"bubble",
-	"insertion",
-	"merge",
-	"quick"
-};
-
-status_t
-SAV_new(SAV **sav) {
+status_t SAV_new(SAV **sav) {
 	if((*sav = (SAV *)malloc(sizeof(SAV))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
@@ -16,7 +8,7 @@ SAV_new(SAV **sav) {
 	(*sav)->cmps = (*sav)->swps = (*sav)->its = (*sav)->B_used = 0;
 	(*sav)->status = RUN;
 	(*sav)->sort_status = PAUSE;
-	(*sav)->sort_algo = SORT_MAX_ALGORITHMS;
+	(*sav)->sort_algo = ALGORITHMS_COUNT;
 
 	if(((*sav)->arr = (Arr *)malloc(sizeof(Arr))) == NULL)
 		return ERROR_MEMORY_ALLOC;
@@ -32,8 +24,7 @@ SAV_new(SAV **sav) {
 	return 0;
 }
 
-void
-SAV_destroy(SAV *sav) {
+void SAV_destroy(SAV *sav) {
 	if(sav == NULL) return;
 
 	free(sav->arr->v);

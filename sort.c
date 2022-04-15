@@ -6,8 +6,7 @@
 
 #define DELAY	5
 
-void
-insertion_sort(SAV *sav) {
+void insertion_sort(SAV *sav) {
 	int key;
 	size_t i, j;
 
@@ -58,8 +57,7 @@ insertion_sort(SAV *sav) {
 	if(sav->status != STOP) sav->sort_status = SORTED;
 }
 
-void
-bubble_sort(SAV *sav) {
+void bubble_sort(SAV *sav) {
 	size_t i, j;
 
 	if((sav->sort_status == STOP) || (sav->status == STOP)) return;
@@ -101,8 +99,7 @@ bubble_sort(SAV *sav) {
 	if(sav->status != STOP) sav->sort_status = SORTED;
 }
 
-void
-merge(SAV *sav, int low, int middle, int high) {
+void merge(SAV *sav, int low, int middle, int high) {
 	size_t n1, n2, i, j, k;
 
 	if((sav->sort_status == STOP) || (sav->status == STOP)) return;
@@ -117,10 +114,10 @@ merge(SAV *sav, int low, int middle, int high) {
 	sav->B_used += n2;
 
 	/* B holds middle low array */
-	for(i = low, j = 0; i < middle; i++, j++) 
+	for(i = low, j = 0; i < middle; i++, j++)
 		B[j] = sav->arr->v[i];
 
-	/* C middle high part of the array */ 
+	/* C middle high part of the array */
 	for(i = middle, j = 0; i < high; i++, j++)
 		C[j] = sav->arr->v[i];
 
@@ -152,8 +149,7 @@ merge(SAV *sav, int low, int middle, int high) {
         sav->arr->v[k++] = C[j++];
 }
 
-void
-merge_sort(SAV *sav, int low, int high) {
+void merge_sort(SAV *sav, int low, int high) {
 	if(sav == NULL) return;
 
 	if((sav->sort_status == STOP) || (sav->status == STOP))
@@ -186,8 +182,7 @@ void merge_sort_wrapper(SAV *sav) {
 	if(sav->status != STOP) sav->sort_status = SORTED;
 }
 
-void
-quick_sort_partition(SAV *sav, int low, int *middle, int high) {
+void quick_sort_partition(SAV *sav, int low, int *middle, int high) {
 	int i, j, pivot;
 
 	pivot = high;
@@ -215,8 +210,7 @@ quick_sort_partition(SAV *sav, int low, int *middle, int high) {
 	*middle = i;
 }
 
-void
-quick_sort(SAV *sav, int low, int high) {
+void quick_sort(SAV *sav, int low, int high) {
 	int pivot;
 
 	if(sav->status == STOP) return;
@@ -229,8 +223,7 @@ quick_sort(SAV *sav, int low, int high) {
 	}
 }
 
-void
-quick_sort_wrapper(SAV *sav) {
+void quick_sort_wrapper(SAV *sav) {
 	sav->ti = clock();
 	quick_sort(sav, 0, sav->arr->len - 1);
 	printf("SORT: sorting array done\n");
