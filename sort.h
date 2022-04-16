@@ -24,7 +24,6 @@ static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&quick_sort_wrapper
 };
 
-/* static const char *algo_strings[ALGORITHMS_COUNT]; */
 static const char *algo_strings[ALGORITHMS_COUNT] = {
 	"bubble",
 	"insertion",

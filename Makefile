@@ -1,9 +1,8 @@
-CC := cc
-CLIBS := `sdl2-config --libs --cflags`
-CFLAGS := -lSDL2_ttf -lm -Werror -pedantic -ansi -std=c99 -pthread
-SRCS := main.c sav.c util.c sort.c drw.c sdl_extra.c array.c
+CC := gcc
+CLIBS := `sdl2-config --libs` -lSDL2_ttf -lm
+CFLAGS := `sdl2-config --cflags` -Wall -Wshadow -pedantic -ansi -std=c99 -pthread
+SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
-LIBS := array.h status.h
 
 TARGET := sav
 
@@ -11,7 +10,7 @@ TARGET := sav
 
 all: $(TARGET) clean
 
-$(TARGET): $(OBJS) $(HEADERS) $(LIBS)
+$(TARGET): $(OBJS) $(HEADERS)
 	$(CC) $(CLIBS) $(CFLAGS) -o $@ $^
 
 %.o: %.c

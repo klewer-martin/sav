@@ -6,14 +6,33 @@
 
 #define DELAY	5
 
+status_t sort_wait(SAV *sav) {
+	size_t i;
+
+	/* Delay */
+	for(i = 0; i < DELAY; i++) {
+		if((sav->sort_status == STOP) || (sav->status == STOP))
+			return STOP;
+
+		SDL_Delay(1);
+	}
+
+	while(sav->sort_status == PAUSE);
+
+	return OK;
+}
+
 void insertion_sort(SAV *sav) {
 	int key;
 	size_t i, j;
+
+	if(sav == NULL) return;
 
 	if((sav->sort_status == STOP) || (sav->status == STOP)) return;
 	while(sav->sort_status == PAUSE);
 
 	sav->ti = clock();
+
 	for(i = 1; i < sav->arr->len; i++, sav->its++) {
 		sav->cmps += 1;
 		key = sav->arr->v[i];
@@ -26,31 +45,14 @@ void insertion_sort(SAV *sav) {
 			sav->sel = i;
 			sav->cmp = j;
 			sav->its++;
-
-			/* Delay */
-			for(size_t i = 0; i < DELAY; i++) {
-				if((sav->sort_status == STOP) || (sav->status == STOP))
-					goto end;
-
-				SDL_Delay(1);
-			}
-			while(sav->sort_status == PAUSE);
 		}
 		sav->arr->v[j + 1] = key;
 		sav->sel = i;
 		sav->cmp = j;
 		sav->swps += 1;
 
-		/* Delay */
-		for(size_t i = 0; i < DELAY; i++) {
-			if((sav->sort_status == STOP) || (sav->status == STOP))
-				goto end;
-
-			SDL_Delay(1);
-		}
-		while(sav->sort_status == PAUSE);
+		if(sort_wait(sav) == STOP) break;
 	}
-	end:
 
 	sav->tf = clock();
 
@@ -59,6 +61,8 @@ void insertion_sort(SAV *sav) {
 
 void bubble_sort(SAV *sav) {
 	size_t i, j;
+
+	if(sav == NULL) return;
 
 	if((sav->sort_status == STOP) || (sav->status == STOP)) return;
 	while(sav->sort_status == PAUSE);
@@ -73,25 +77,9 @@ void bubble_sort(SAV *sav) {
 				swap(sav->arr->v + j, sav->arr->v+j+1);
 				sav->swps += 1;
 			}
-
-			/* Delay */
-			for(size_t i = 0; i < DELAY; i++) {
-				if((sav->sort_status == STOP) || (sav->status == STOP))
-					goto end;
-
-				SDL_Delay(1);
-			}
-			while(sav->sort_status == PAUSE);
+			if(sort_wait(sav) == STOP) goto end;
 		}
-
-		/* Delay */
-		for(size_t i = 0; i < DELAY; i++) {
-			if((sav->sort_status == STOP) || (sav->status == STOP))
-				goto end;
-
-			SDL_Delay(1);
-		}
-		while(sav->sort_status == PAUSE);
+		if(sort_wait(sav) == STOP) goto end;
 	}
 	end:
 
@@ -130,28 +118,15 @@ void merge(SAV *sav, int low, int middle, int high) {
 		sav->cmps += 1;
 		sav->its += 1;
 
-		while(sav->sort_status == PAUSE);
-
-		/* Delay */
-		for(size_t i = 0; i < DELAY; i++) {
-			if((sav->sort_status == STOP) || (sav->status == STOP))
-				goto end;
-
-			SDL_Delay(1);
-		}
+		if(sort_wait(sav) == STOP) goto end;
 	}
 	end:
 
-	while(i < n1)
-        sav->arr->v[k++] = B[i++];
-
-    while (j < n2)
-        sav->arr->v[k++] = C[j++];
+	while(i < n1) sav->arr->v[k++] = B[i++];
+    while(j < n2) sav->arr->v[k++] = C[j++];
 }
 
 void merge_sort(SAV *sav, int low, int high) {
-	if(sav == NULL) return;
-
 	if((sav->sort_status == STOP) || (sav->status == STOP))
 		return;
 
@@ -175,6 +150,8 @@ void merge_sort(SAV *sav, int low, int high) {
 }
 
 void merge_sort_wrapper(SAV *sav) {
+	if(sav == NULL) return;
+
 	sav->ti = clock();
 	merge_sort(sav, 0, sav->arr->len);
 	sav->tf = clock();
@@ -195,13 +172,7 @@ void quick_sort_partition(SAV *sav, int low, int *middle, int high) {
 			sav->swps += 1;
 		}
 
-		if(sav->status != STOP) sav->status = UPDATE;
-		while(sav->sort_status == PAUSE);
-
-		for(size_t i = 0; i < 5; i++) {
-			if(sav->sort_status == STOP) goto end;
-			SDL_Delay(1);
-		}
+		if(sort_wait(sav) == STOP) goto end;
 	}
 	end:
 
@@ -224,6 +195,8 @@ void quick_sort(SAV *sav, int low, int high) {
 }
 
 void quick_sort_wrapper(SAV *sav) {
+	if(sav == NULL) return;
+
 	sav->ti = clock();
 	quick_sort(sav, 0, sav->arr->len - 1);
 	printf("SORT: sorting array done\n");

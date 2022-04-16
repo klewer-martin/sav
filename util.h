@@ -6,6 +6,12 @@
 
 #include "status.h"
 
+#define UNHEX(color) \
+    ((color) >> (8 * 3)) & 0xFF, \
+    ((color) >> (8 * 2)) & 0xFF, \
+    ((color) >> (8 * 1)) & 0xFF, \
+    ((color) >> (8 * 0)) & 0xFF
+
 void end(const char *msg);
 void swap(int *a, int *b);
 void wait_main_thread(status_t *st);
