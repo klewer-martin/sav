@@ -9,6 +9,7 @@
 
 #define WELCOME_MSG_TIME 5
 
+/* TODO: sorting algorithms should only keep track of sav->sort_status and not sav->status */
 /* TODO: support restart even if the sorting algorithm didn't finish */
 
 void check_events(Drw *, SAV *);
@@ -39,7 +40,7 @@ int main (void) {
 	/* assigns random values to array */
 	shuffle(sav->arr);
 
-	/* selecting the sorting algorithms */
+	/* selecting the sorting algorithm */
 	sav->sort_algo = QUICK_SORT;
 
 	/* TODO: this thread should be called if the user wants to begin sorting the array */
@@ -53,6 +54,10 @@ int main (void) {
 	/* main loop */
 	while(sav->status != STOP) {
 		check_events(drw, sav);
+
+		SDL_SetRenderDrawColor(drw->rend, 29, 28, 28, 0);
+		SDL_RenderClear(drw->rend);
+
 		drw_array_graph(drw, sav);
 		drw_status_bar(drw, sav);
 		SDL_RenderPresent(drw->rend);
@@ -82,6 +87,7 @@ int main (void) {
 
 void check_events(Drw *drw, SAV *sav) {
 	SDL_Event event;
+
 	while (SDL_PollEvent(&event)) {
 		switch(event.type) {
 		case SDL_QUIT:
@@ -117,4 +123,3 @@ void check_events(Drw *drw, SAV *sav) {
 		}
 	}
 }
-
