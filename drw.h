@@ -13,6 +13,10 @@
 #define CMP_COLOR	0x00FFFF00
 #define NORM_COLOR	0xFF000000
 
+/* #define SEL_COLOR	0xFF0000FF // RGBA (A not used rn) */
+/* #define CMP_COLOR	0x00FF00FF */
+/* #define NORM_COLOR	0xFFFFFFFF */
+
 #define FONT_SIZE	12
 #define FONT_NAME	"/home/mk/.local/share/fonts/VictorMono-Bold.ttf"
 #define FONT_COLOR	0xBBBBBB
@@ -45,7 +49,7 @@ void Drw_destroy(Drw *drw);
 
 void drw_element(SDL_Renderer *rend, int x, int y, int h);
 void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col);
-void drw_text(Drw *drw, char *text, int x, int y);
+void drw_text(Drw *drw, const char *text, int x, int y);
 
 void drw_array_graph(Drw *drw, SAV *sav);
 void drw_status_bar(Drw *drw, SAV *sav);

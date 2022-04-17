@@ -6,6 +6,11 @@
 
 #include "sav.h"
 
+#define SORT_DELAY_DEFAULT  5
+#define SORT_DELAY_MAX      250
+
+void set_sort_speed(SAV *sav, size_t new_value);
+
 void bubble_sort(SAV *);
 void insertion_sort(SAV *);
 
@@ -16,19 +21,5 @@ void merge_sort_wrapper(SAV *);
 void quick_sort_wrapper(SAV *sav);
 void quick_sort(SAV *sav, int low, int high);
 void quick_sort_partition(SAV *sav, int low, int *middle, int high);
-
-static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
-	&bubble_sort,
-	&insertion_sort,
-	&merge_sort_wrapper,
-	&quick_sort_wrapper
-};
-
-static const char *algo_strings[ALGORITHMS_COUNT] = {
-	"bubble",
-	"insertion",
-	"merge",
-	"quick"
-};
 
 #endif // __SORT_H__
