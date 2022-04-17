@@ -1,19 +1,26 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#include "sav.h"
 #include "drw.h"
 #include "sort.h"
 #include "util.h"
 #include "sdl_extra.h"
 #include "array.h"
 
-#define WELCOME_MSG_TIME 5
-
-/* TODO: sorting algorithms should only keep track of sav->sort_status and not sav->status */
-/* TODO: support restart even if the sorting algorithm didn't finish */
+#define WELCOME_MSG_TIME 3
 
 void check_events(Drw *, SAV *);
+
+/* void *(*start_routine)(void *), pthread_create routine */
 void *routine_wrapper(void *);
+
+static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
+	&bubble_sort,
+	&insertion_sort,
+	&merge_sort_wrapper,
+	&quick_sort_wrapper
+};
 
 void *routine_wrapper(void *arg) {
 	SAV *sav = (SAV *)arg;
@@ -26,12 +33,16 @@ void *routine_wrapper(void *arg) {
 	return NULL;
 }
 
+/* TODO: Support random, reversed, in_order arrays */
+/* TODO: Support command line arguments */
+/* TODO: Support sound */
+
 int main (void) {
 	SAV *sav;
 	Drw *drw;
-	clock_t ti, tc;
+	time_t tic, toc;
 
-	pthread_t p1;
+	pthread_t p1 = 0;
 	status_t st;
 
 	if((st = SAV_new(&sav)) != OK) goto end;
@@ -41,15 +52,11 @@ int main (void) {
 	shuffle(sav->arr);
 
 	/* selecting the sorting algorithm */
-	sav->sort_algo = QUICK_SORT;
-
-	/* TODO: this thread should be called if the user wants to begin sorting the array */
-	/* start sorting thread */
-	pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
+	sav->sort_algo = INSERTION_SORT;
 
 	sav->status = WELCOME;
 	sav->sort_status = PAUSE;
-	ti = clock();
+	tic = time(NULL);
 
 	/* main loop */
 	while(sav->status != STOP) {
@@ -63,22 +70,39 @@ int main (void) {
 		SDL_RenderPresent(drw->rend);
 
 		if(sav->status == WELCOME)
-			if((((tc = clock()) - ti) / CLOCKS_PER_SEC) > WELCOME_MSG_TIME)
+			if(((toc = time(NULL)) - tic) > WELCOME_MSG_TIME)
 				sav->status = START;
 
-		if((sav->sort_status == SORTED) && (sav->status == RESTART)) {
-			/* this state can only be achived if p1 ended */
-			shuffle(sav->arr);
-			sav->status = RUN;
-			sav->sort_status = RUN;
+		if((sav->status == START) || (sav->status == WELCOME)) {
+			if(sav->sort_status == RUN) {
+				sav->status = RUN;
+				/* start sorting thread */
+				pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
+			}
+		}
 
-			/* let's call p1 again */
+		if(sav->status == RESTART) {
+			/* if sorting thread is runnning stop it */
+			sav->sort_status = STOP;
+			pthread_join(p1, NULL);
+
+			reset_sort_stats(sav);
+
+			shuffle(sav->arr);
+
+			sav->status = RUN;
+			sav->sort_status = PAUSE;
+
+			/* let's start the sorting thread */
 			pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 		}
 	}
 
 	end:
-	pthread_join(p1, NULL);
+
+	/* check if p1 has been initialized */
+	if(p1 != 0)
+		pthread_join(p1, NULL);
 
 	SAV_destroy(sav);
 	Drw_destroy(drw);
@@ -96,11 +120,20 @@ void check_events(Drw *drw, SAV *sav) {
 		case SDL_KEYDOWN:
 			switch(event.key.keysym.scancode) {
 			case SDL_SCANCODE_R:
-				if(sav->sort_status == SORTED) sav->status = RESTART;
+				if(sav->status == RUN) sav->status = RESTART;
 				break;
 			case SDL_SCANCODE_SPACE:
-				if(sav->sort_status == PAUSE) sav->status = sav->sort_status = RUN;
+				if(sav->sort_status == PAUSE) sav->sort_status = RUN;
 				else if(sav->sort_status == RUN) sav->sort_status = PAUSE;
+				break;
+			case SDL_SCANCODE_Q:
+				sav->status = sav->sort_status = STOP;
+				break;
+			case SDL_SCANCODE_EQUALS:
+				set_sort_speed(sav, sav->sort_delay - 1);
+				break;
+			case SDL_SCANCODE_MINUS:
+				set_sort_speed(sav, sav->sort_delay + 1);
 				break;
 			default: break;
 			}

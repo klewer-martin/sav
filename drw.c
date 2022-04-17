@@ -1,6 +1,20 @@
 #include "drw.h"
 
 static SDL_Rect rect;
+static const char *algo_sel_str[ALGORITHMS_COUNT] = {
+	"bubble",
+	"insertion",
+	"merge",
+	"quick"
+};
+
+static const char *sort_status_str[STATUS_MAX] = {
+	"READY",
+	"SORTING",
+	"PAUSED",
+	"SORTED",
+	"STOPPED"
+};
 
 void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col) {
 	rect.x = x + drw->x_border; /* bottom left + x */
@@ -8,16 +22,16 @@ void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col) {
 	rect.w = RECT_WIDTH; /* fixed width */
 	rect.h = -h;
 
-	/* SDL_RenderDrawRect(drw->rend, &rect); */
 	SDL_SetRenderDrawColor(drw->rend, UNHEX(col));
 	SDL_RenderFillRect(drw->rend, &rect);
 
 	/* printf("INFO: color: #%02X%02X%02X%02X\n", UNHEX(col)); */
 
+	/* Simulate shadows around rectangles */
 	SDL_SetRenderDrawColor(drw->rend, UNHEX(0x000000FF));
 	SDL_RenderDrawLine(drw->rend,
-						x + drw->x_border, y - drw->y_border,
-						x + drw->x_border, y - drw->y_border - h);
+						x + drw->x_border + RECT_WIDTH - 1, y - drw->y_border - 1,
+						x + drw->x_border + RECT_WIDTH - 1, y - drw->y_border - h);
 }
 
 void drw_array_graph(Drw *drw, SAV *sav) {
@@ -39,43 +53,47 @@ void drw_status_bar(Drw *drw, SAV *sav) {
 	rect.w = drw->w - (2 * bar_border); /* fixed width */
 	rect.h = -BAR_HEIGHT;
 
-	/* SDL_RenderDrawRect(drw->rend, &rect); */
-
 	/* TODO: Make a variable to store statusbar background color */
 	SDL_SetRenderDrawColor(drw->rend, UNHEX(0x000000FF)); /* RGBA */
 	SDL_RenderFillRect(drw->rend, &rect);
 
 	/* TODO: create a function which fetchs the status text to be drawn based on the status */
-	if(sav->sort_status == SORTED) {
+	if(sav->status == WELCOME) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTED [%s sort] done in %.2fs, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
-				algo_strings[sav->sort_algo],
-				(double)(sav->tf - sav->ti) / CLOCKS_PER_SEC,
-				sav->arr->len, sav->cmps, sav->swps, sav->B_used);
-	} else if(sav->sort_status == PAUSE) {
-		if(sav->status == START) {
-			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"[%s sort selected] press SPACE to start sorting",
-					algo_strings[sav->sort_algo]);
-		} else if(sav->status == WELCOME) {
-			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"Welcome to sorting algorithms visualized - [%s sort selected] press SPACE to start sorting",
-					algo_strings[sav->sort_algo]);
-		} else {
-			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"PAUSED [%s sort] press SPACE to resume", algo_strings[sav->sort_algo]);
-		}
-	} else {
-		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"SORTING [%s sort]     L: %ld, C: %ld, S: %ld",
-				algo_strings[sav->sort_algo], sav->arr->len, sav->cmps,
-				sav->swps);
+				"  Welcome to sorting algorithms visualized  [%s sort]  press SPACE to start sorting",
+				algo_sel_str[sav->sort_algo]);
 	}
+	else if(sav->status == START) {
+		snprintf(drw->bar_text, drw->bar_text_len - 2,
+				"  %-9s  [%s sort]   press SPACE to start sorting", sort_status_str[OK],
+				algo_sel_str[sav->sort_algo]);
+	}
+	else if(sav->status == RUN) {
+		if(sav->sort_status == PAUSE)
+			snprintf(drw->bar_text, drw->bar_text_len - 2,
+					"  %-9s  [%s sort]   press SPACE to resume",
+					sort_status_str[sav->sort_status],
+					algo_sel_str[sav->sort_algo]);
+		else if(sav->sort_status == SORTED)
+			snprintf(drw->bar_text, drw->bar_text_len - 2,
+					"  %-9s  [%s sort]   done in %lds, L: %ld, C: %ld, S: %ld, extra storage used: %ld Bytes",
+					sort_status_str[sav->sort_status],
+					algo_sel_str[sav->sort_algo],
+					(sav->tf - sav->ti),
+					sav->arr->len, sav->cmps, sav->swps, sav->B_used);
+		else if(sav->sort_status == RUN)
+			snprintf(drw->bar_text, drw->bar_text_len - 2,
+					"  %-9s  [%s sort]   L: %ld, C: %ld, S: %ld", sort_status_str[sav->sort_status],
+					algo_sel_str[sav->sort_algo], sav->arr->len, sav->cmps,
+					sav->swps);
+	}
+	else snprintf(drw->bar_text, drw->bar_text_len - 2, "  Exiting ..... ");
+
 	drw_text(drw, drw->bar_text, 0, drw->h - drw->font_size - 5);
 	memset(drw->bar_text, 0, sizeof(char) * drw->bar_text_len);
 }
 
-void drw_text(Drw *drw, char *text, int x, int y) {
+void drw_text(Drw *drw, const char *text, int x, int y) {
 	drw->text_surface = TTF_RenderText_Blended(drw->font, text, drw->text_color);
 	drw->text_texture = SDL_CreateTextureFromSurface(drw->rend, drw->text_surface);
 

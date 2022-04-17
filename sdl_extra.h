@@ -6,8 +6,6 @@
 
 #include "array.h"
 #include "status.h"
-#include "drw.h"
-#include "sav.h"
 
 #define X_BORDER	40
 #define Y_BORDER	40
