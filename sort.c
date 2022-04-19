@@ -101,6 +101,36 @@ void bubble_sort(SAV *sav) {
 	sav->sel = sav->cmp = ARR_MAX + 1;
 }
 
+void bubble_sort_improved(SAV *sav) {
+	size_t i, j;
+	bool swap_happen;
+
+	if(sav == NULL) return;
+	if(sort_pause(sav) == STOP) return;
+
+	sav->ti = time(NULL);
+	for(i = 0; (i < sav->arr->len - 1) && (sav->sort_status != STOP) && (swap_happen != false); i++) {
+		if(sort_delay(sav) == STOP) break;
+		if(sort_pause(sav) == STOP) break;
+		for(j = 0; j < (sav->arr->len - 1 - i); j++, sav->its++) {
+			sav->sel = j + 1;
+			sav->cmp = j;
+			sav->cmps += 1;
+			if(sav->arr->v[j] - sav->arr->v[j + 1] > 0) {
+				swap(sav->arr->v + j, sav->arr->v+j+1);
+				sav->swps += 1;
+				swap_happen = true;
+			}
+			if(sort_delay(sav) == STOP) break;
+			if(sort_pause(sav) == STOP) break;
+		}
+	}
+
+	sav->tf = time(NULL);
+	if(sav->status != STOP) sav->sort_status = SORTED;
+	sav->sel = sav->cmp = ARR_MAX + 1;
+}
+
 void merge(SAV *sav, int low, int middle, int high) {
 	size_t n1, n2, i, j, k;
 
@@ -212,4 +242,28 @@ void quick_sort_wrapper(SAV *sav) {
 	if(sav->sort_status != STOP) sav->sort_status = SORTED;
 	sav->sel = sav->cmp = ARR_MAX + 1;
 	sav->tf = time(NULL);
+}
+
+void shell_sort(SAV *sav) {
+	int gap, i, j, temp;
+    for (gap = ((sav->arr->len) / 2); gap > 0; gap /= 2) {
+		sav->cmps += 1;
+        for (i = gap; i < sav->arr->len; i += 1) {
+			temp = sav->arr->v[i];
+			sav->sel = i;
+            for (j = i; j >= gap && sav->arr->v[j - gap] > temp; j -= gap) {
+                sav->arr->v[j] = sav->arr->v[j - gap];
+				sav->cmp = j - gap;
+				sav->cmps += 1;
+
+				if(sort_delay(sav) == STOP) return;
+				if(sort_delay(sav) == STOP) return;
+				if(sort_pause(sav) == STOP) return;
+			}
+            sav->arr->v[j] = temp;
+			sav->swps += 1;
+			sav->cmps += 1;
+        }
+    }
+	if(sav->sort_status != STOP) sav->sort_status = SORTED;
 }

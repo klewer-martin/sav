@@ -17,9 +17,11 @@ void *routine_wrapper(void *);
 
 static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&bubble_sort,
+	&bubble_sort_improved,
 	&insertion_sort,
 	&merge_sort_wrapper,
-	&quick_sort_wrapper
+	&quick_sort_wrapper,
+	&shell_sort
 };
 
 void *routine_wrapper(void *arg) {
@@ -52,7 +54,7 @@ int main (void) {
 	shuffle(sav->arr);
 
 	/* selecting the sorting algorithm */
-	sav->sort_algo = INSERTION_SORT;
+	sav->sort_algo = SHELL_SORT;
 
 	sav->status = WELCOME;
 	sav->sort_status = PAUSE;
@@ -95,6 +97,10 @@ int main (void) {
 
 			/* let's start the sorting thread */
 			pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
+		}
+
+		if(sav->sort_status == SORTED) {
+			sav->sel = sav->cmp = ARR_LEN + 1;
 		}
 	}
 
