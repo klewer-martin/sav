@@ -14,6 +14,7 @@ void check_events(Drw *, SAV *);
 
 /* void *(*start_routine)(void *), pthread_create routine */
 void *routine_wrapper(void *);
+void sort_selector(SAV *sav);
 
 static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&bubble_sort,
@@ -35,6 +36,13 @@ void *routine_wrapper(void *arg) {
 	return NULL;
 }
 
+void sort_selector(SAV *sav) {
+	if(sav->sort_algo == (ALGORITHMS_COUNT - 1))
+		sav->sort_algo = BUBBLE_SORT;
+	else sav->sort_algo++;
+}
+
+/* TODO: Find bug when restarting the sort; statusbar prints "Exiting ..." */
 /* TODO: Support random, reversed, in_order arrays */
 /* TODO: Support command line arguments */
 /* TODO: Support sound */
@@ -71,6 +79,7 @@ int main (void) {
 		drw_status_bar(drw, sav);
 		SDL_RenderPresent(drw->rend);
 
+		/* Print welcome message only on startup */
 		if(sav->status == WELCOME)
 			if(((toc = time(NULL)) - tic) > WELCOME_MSG_TIME)
 				sav->status = START;
@@ -92,11 +101,8 @@ int main (void) {
 
 			shuffle(sav->arr);
 
-			sav->status = RUN;
+			sav->status = START;
 			sav->sort_status = PAUSE;
-
-			/* let's start the sorting thread */
-			pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 		}
 
 		if(sav->sort_status == SORTED) {
@@ -107,8 +113,7 @@ int main (void) {
 	end:
 
 	/* check if p1 has been initialized */
-	if(p1 != 0)
-		pthread_join(p1, NULL);
+	if(p1 != 0) pthread_join(p1, NULL);
 
 	SAV_destroy(sav);
 	Drw_destroy(drw);
@@ -140,6 +145,9 @@ void check_events(Drw *drw, SAV *sav) {
 				break;
 			case SDL_SCANCODE_MINUS:
 				set_sort_speed(sav, sav->sort_delay + 1);
+				break;
+			case SDL_SCANCODE_TAB:
+				sort_selector(sav);
 				break;
 			default: break;
 			}

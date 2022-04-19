@@ -246,6 +246,8 @@ void quick_sort_wrapper(SAV *sav) {
 
 void shell_sort(SAV *sav) {
 	int gap, i, j, temp;
+	sav->ti = time(NULL);
+
     for (gap = ((sav->arr->len) / 2); gap > 0; gap /= 2) {
 		sav->cmps += 1;
         for (i = gap; i < sav->arr->len; i += 1) {
@@ -257,7 +259,6 @@ void shell_sort(SAV *sav) {
 				sav->cmps += 1;
 
 				if(sort_delay(sav) == STOP) return;
-				if(sort_delay(sav) == STOP) return;
 				if(sort_pause(sav) == STOP) return;
 			}
             sav->arr->v[j] = temp;
@@ -265,5 +266,7 @@ void shell_sort(SAV *sav) {
 			sav->cmps += 1;
         }
     }
+	sav->tf = time(NULL);
+
 	if(sav->sort_status != STOP) sav->sort_status = SORTED;
 }
