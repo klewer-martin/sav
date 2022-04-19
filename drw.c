@@ -1,11 +1,15 @@
 #include "drw.h"
 
+#include <assert.h>
+
 static SDL_Rect rect;
 static const char *algo_sel_str[ALGORITHMS_COUNT] = {
 	"bubble",
+	"improved bubble",
 	"insertion",
 	"merge",
-	"quick"
+	"quick",
+	"shell"
 };
 
 static const char *sort_status_str[STATUS_MAX] = {
