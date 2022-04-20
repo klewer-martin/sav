@@ -44,6 +44,23 @@ typedef struct {
 	char *bar_text;
 } Drw;
 
+static char * const algo_sel_str[ALGORITHMS_COUNT] = {
+	"bubble",
+	"improved bubble",
+	"insertion",
+	"merge",
+	"quick",
+	"shell"
+};
+
+static char * const sort_status_str[STATUS_MAX] = {
+	"READY",
+	"SORTING",
+	"PAUSED",
+	"SORTED",
+	"STOPPED"
+};
+
 status_t Drw_new(Drw **drw);
 void Drw_destroy(Drw *drw);
 

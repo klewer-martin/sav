@@ -16,12 +16,9 @@ void set_sort_speed(SAV *sav, size_t new_value) {
 status_t sort_delay(const SAV *sav) {
 	size_t i;
 
-	for(i = 0; i < sav->sort_delay; i++) {
+	for(i = 0; i < sav->sort_delay; i++, SDL_Delay(1))
 		if((sav->sort_status == STOP) || (sav->status == STOP))
 			return STOP;
-
-		SDL_Delay(1);
-	}
 
 	return OK;
 }
@@ -30,7 +27,7 @@ status_t sort_pause(const SAV *sav) {
 	while(sav->sort_status == PAUSE)
 		if(sort_delay(sav) == STOP) return STOP;
 
-	return OK;
+	return sav->sort_status == STOP ? STOP : OK;
 }
 
 void insertion_sort(SAV *sav) {
@@ -195,6 +192,7 @@ void merge_sort_wrapper(SAV *sav) {
 	sav->ti = time(NULL);
 	merge_sort(sav, 0, sav->arr->len);
 	sav->tf = time(NULL);
+
 	sav->sel = sav->arr->len + 1;
 	if(sav->status != STOP) sav->sort_status = SORTED;
 	sav->sel = sav->cmp = ARR_MAX + 1;
@@ -211,6 +209,7 @@ void quick_sort_partition(SAV *sav, int low, int *middle, int high) {
 			swap(&(sav->arr->v[i++]), &(sav->arr->v[j]));
 			sav->swps += 1;
 		}
+		sav->cmp = j;
 
 		if(sort_delay(sav) == STOP) return;
 		if(sort_pause(sav) == STOP) return;
@@ -238,7 +237,6 @@ void quick_sort_wrapper(SAV *sav) {
 
 	sav->ti = time(NULL);
 	quick_sort(sav, 0, sav->arr->len - 1);
-	printf("SORT: sorting array done\n");
 	if(sav->sort_status != STOP) sav->sort_status = SORTED;
 	sav->sel = sav->cmp = ARR_MAX + 1;
 	sav->tf = time(NULL);
