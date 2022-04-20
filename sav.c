@@ -31,7 +31,8 @@ status_t SAV_new(SAV **sav) {
 	if((*sav)->arr == NULL) {
 		return ERROR_MEMORY_ALLOC;
 	}
-	return 0;
+
+	return OK;
 }
 
 void SAV_destroy(SAV *sav) {

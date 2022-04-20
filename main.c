@@ -38,11 +38,10 @@ void *routine_wrapper(void *arg) {
 
 void sort_selector(SAV *sav) {
 	if(sav->sort_algo == (ALGORITHMS_COUNT - 1))
-		sav->sort_algo = BUBBLE_SORT;
+		sav->sort_algo = 0;
 	else sav->sort_algo++;
 }
 
-/* TODO: Find bug when restarting the sort; statusbar prints "Exiting ..." */
 /* TODO: Support random, reversed, in_order arrays */
 /* TODO: Support command line arguments */
 /* TODO: Support sound */
@@ -62,7 +61,7 @@ int main (void) {
 	shuffle(sav->arr);
 
 	/* selecting the sorting algorithm */
-	sav->sort_algo = SHELL_SORT;
+	sav->sort_algo = QUICK_SORT;
 
 	sav->status = WELCOME;
 	sav->sort_status = PAUSE;
@@ -87,6 +86,7 @@ int main (void) {
 		if((sav->status == START) || (sav->status == WELCOME)) {
 			if(sav->sort_status == RUN) {
 				sav->status = RUN;
+
 				/* start sorting thread */
 				pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
 			}
@@ -98,16 +98,14 @@ int main (void) {
 			pthread_join(p1, NULL);
 
 			reset_sort_stats(sav);
-
 			shuffle(sav->arr);
 
 			sav->status = START;
 			sav->sort_status = PAUSE;
 		}
 
-		if(sav->sort_status == SORTED) {
+		if(sav->sort_status == SORTED)
 			sav->sel = sav->cmp = ARR_LEN + 1;
-		}
 	}
 
 	end:

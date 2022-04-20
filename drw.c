@@ -3,22 +3,6 @@
 #include <assert.h>
 
 static SDL_Rect rect;
-static const char *algo_sel_str[ALGORITHMS_COUNT] = {
-	"bubble",
-	"improved bubble",
-	"insertion",
-	"merge",
-	"quick",
-	"shell"
-};
-
-static const char *sort_status_str[STATUS_MAX] = {
-	"READY",
-	"SORTING",
-	"PAUSED",
-	"SORTED",
-	"STOPPED"
-};
 
 void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col) {
 	rect.x = x + drw->x_border; /* bottom left + x */
@@ -28,7 +12,6 @@ void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col) {
 
 	SDL_SetRenderDrawColor(drw->rend, UNHEX(col));
 	SDL_RenderFillRect(drw->rend, &rect);
-
 	/* printf("INFO: color: #%02X%02X%02X%02X\n", UNHEX(col)); */
 
 	/* Simulate shadows around rectangles */
