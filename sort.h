@@ -24,5 +24,6 @@ void quick_sort(SAV *sav, int low, int high);
 void quick_sort_partition(SAV *sav, int low, int *middle, int high);
 
 void shell_sort(SAV *sav);
+void selection_sort(SAV *sav);
 
 #endif // __SORT_H__
