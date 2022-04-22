@@ -22,7 +22,8 @@ static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&insertion_sort,
 	&merge_sort_wrapper,
 	&quick_sort_wrapper,
-	&shell_sort
+	&shell_sort,
+	&selection_sort
 };
 
 void *routine_wrapper(void *arg) {

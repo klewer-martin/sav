@@ -17,6 +17,7 @@ typedef enum {
 	MERGE_SORT,
 	QUICK_SORT,
 	SHELL_SORT,
+	SELECTION_SORT,
 	ALGORITHMS_COUNT
 } sort_t;
 

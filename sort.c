@@ -74,12 +74,9 @@ void bubble_sort(SAV *sav) {
 	size_t i, j;
 
 	if(sav == NULL) return;
-	if(sort_pause(sav) == STOP) return;
 
 	sav->ti = time(NULL);
 	for(i = 0; (i < sav->arr->len - 1) && (sav->sort_status != STOP); i++) {
-		if(sort_delay(sav) == STOP) break;
-		if(sort_pause(sav) == STOP) break;
 		for(j = 0; j < (sav->arr->len - 1 - i); j++, sav->its++) {
 			sav->sel = j + 1;
 			sav->cmp = j;
@@ -91,6 +88,8 @@ void bubble_sort(SAV *sav) {
 			if(sort_delay(sav) == STOP) break;
 			if(sort_pause(sav) == STOP) break;
 		}
+		if(sort_delay(sav) == STOP) break;
+		if(sort_pause(sav) == STOP) break;
 	}
 
 	sav->tf = time(NULL);
@@ -103,7 +102,6 @@ void bubble_sort_improved(SAV *sav) {
 	bool swap_happen;
 
 	if(sav == NULL) return;
-	if(sort_pause(sav) == STOP) return;
 
 	sav->ti = time(NULL);
 	for(i = 0; (i < sav->arr->len - 1) && (sav->sort_status != STOP) && (swap_happen != false); i++) {
@@ -167,8 +165,6 @@ void merge(SAV *sav, int low, int middle, int high) {
 }
 
 void merge_sort(SAV *sav, int low, int high) {
-	if(sort_pause(sav) == STOP) return;
-
 	int middle;
 
 	middle = ((high + low) / 2);
@@ -244,6 +240,9 @@ void quick_sort_wrapper(SAV *sav) {
 
 void shell_sort(SAV *sav) {
 	int gap, i, j, temp;
+
+	if(sav == NULL) return;
+
 	sav->ti = time(NULL);
 
     for (gap = ((sav->arr->len) / 2); gap > 0; gap /= 2) {
@@ -266,5 +265,33 @@ void shell_sort(SAV *sav) {
     }
 	sav->tf = time(NULL);
 
+	if(sav->sort_status != STOP) sav->sort_status = SORTED;
+}
+
+void selection_sort(SAV *sav)
+{
+	int i, j;
+	int min;
+
+	if(sav == NULL) return;
+
+	sav->ti = time(NULL);
+
+	for (i = 0; i < sav->arr->len; i++) {
+		min = i;
+		sav->sel = i;
+		for (j = i + 1; j < sav->arr->len; j++) {
+			if (sav->arr->v[j] < sav->arr->v[min]) min = j;
+			sav->cmp = min;
+			if(sort_delay(sav) == STOP) return;
+			if(sort_pause(sav) == STOP) return;
+		}
+		sav->cmp = min;
+		if(sort_delay(sav) == STOP) return;
+		if(sort_pause(sav) == STOP) return;
+		swap(&sav->arr->v[i], &sav->arr->v[min]);
+	}
+
+	sav->tf = time(NULL);
 	if(sav->sort_status != STOP) sav->sort_status = SORTED;
 }

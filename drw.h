@@ -50,7 +50,8 @@ static char * const algo_sel_str[ALGORITHMS_COUNT] = {
 	"insertion",
 	"merge",
 	"quick",
-	"shell"
+	"shell",
+	"selection"
 };
 
 static char * const sort_status_str[STATUS_MAX] = {
