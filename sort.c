@@ -7,7 +7,7 @@
 void set_sort_speed(SAV *sav, size_t new_value) {
 	if(sav == NULL) return;
 
-	if((new_value > 0) && (new_value < SORT_DELAY_MAX)) {
+	if((new_value > 0) && (new_value <= SORT_DELAY_MAX)) {
 		printf("INFO: Updating sort_delay to: %ld\n", new_value);
 		sav->sort_delay = new_value;
 	}
@@ -143,19 +143,27 @@ void merge(SAV *sav, int low, int middle, int high) {
 	for(i = low, j = 0; i < middle; i++, j++)
 		B[j] = sav->arr->v[i];
 
-	/* C middle high part of the array */
+	/* C middle high */
 	for(i = middle, j = 0; i < high; i++, j++)
 		C[j] = sav->arr->v[i];
 
-	/* merge B1 and C1 in order */
+	/* merge B and C in order */
 	for(k = low, i = j = 0; (k < high) && (i < n1) && (j < n2); k++) {
-		if(B[i] <= C[j]) sav->arr->v[k] = B[i++];
-		else sav->arr->v[k] = C[j++];
+		if(B[i] <= C[j]) {
+			sav->arr->v[k] = B[i++];
+			sav->cmps += 1;
+		}
+		else {
+			sav->cmps += 1;
+			sav->arr->v[k] = C[j++];
+		}
 
 		sav->sel = (k + 1);
 		sav->cmps += 1;
 		sav->its += 1;
 
+		/* double delay; to match speed of other algorithms */
+		if(sort_delay(sav) == STOP) return;
 		if(sort_delay(sav) == STOP) return;
 		if(sort_pause(sav) == STOP) return;
 	}
@@ -179,6 +187,8 @@ void merge_sort(SAV *sav, int low, int high) {
 
 		/* merge both arrays ordered */
 		merge(sav, low, middle, high);
+
+		sav->cmps += 1;
 	}
 }
 
@@ -207,6 +217,7 @@ void quick_sort_partition(SAV *sav, int low, int *middle, int high) {
 		}
 		sav->cmp = j;
 
+		if(sort_delay(sav) == STOP) return;
 		if(sort_delay(sav) == STOP) return;
 		if(sort_pause(sav) == STOP) return;
 	}
@@ -260,7 +271,6 @@ void shell_sort(SAV *sav) {
 			}
             sav->arr->v[j] = temp;
 			sav->swps += 1;
-			sav->cmps += 1;
         }
     }
 	sav->tf = time(NULL);
@@ -282,7 +292,8 @@ void selection_sort(SAV *sav)
 		sav->sel = i;
 		for (j = i + 1; j < sav->arr->len; j++) {
 			if (sav->arr->v[j] < sav->arr->v[min]) min = j;
-			sav->cmp = min;
+			sav->cmps += 1;
+			sav->cmp = j;
 			if(sort_delay(sav) == STOP) return;
 			if(sort_pause(sav) == STOP) return;
 		}
@@ -290,8 +301,71 @@ void selection_sort(SAV *sav)
 		if(sort_delay(sav) == STOP) return;
 		if(sort_pause(sav) == STOP) return;
 		swap(&sav->arr->v[i], &sav->arr->v[min]);
+		sav->swps += 1;
 	}
 
 	sav->tf = time(NULL);
 	if(sav->sort_status != STOP) sav->sort_status = SORTED;
+}
+
+
+/* build max_heap */
+void heapify(SAV *sav, int len, int i) {
+	/* Find largest among root, left child and right child */
+	int root = i;
+	int child_left = 2 * i + 1;
+	int child_right = 2 * i + 2;
+
+	sav->cmp = child_left;
+	sav->cmps += 1;
+	if((child_left < len) && (sav->arr->v[child_left] > sav->arr->v[root]))
+		root = child_left;
+
+	sav->cmp = child_right;
+	sav->cmps += 1;
+	if((child_right < len) && (sav->arr->v[child_right] > sav->arr->v[root]))
+		root = child_right;
+
+	/* Swap and continue heapifying if root is not root */
+	sav->cmps += 1;
+	if(root != i) {
+		sav->swps += 1;
+		swap(&(sav->arr->v[i]), &sav->arr->v[root]);
+		heapify(sav, len, root);
+	}
+
+	if(sort_delay(sav) == STOP) return;
+	if(sort_pause(sav) == STOP) return;
+}
+
+/* Main function to do heap sort */
+void heap_sort(SAV *sav) {
+	int i;
+	if(sav == NULL) return;
+
+	sav->ti = time(NULL);
+
+	/* Build max heap */
+	for (i = ((sav->arr->len / 2) - 1); i >= 0; i--) {
+		heapify(sav, sav->arr->len, i);
+	}
+
+	/* Heap sort */
+	for (i = (sav->arr->len - 1); i >= 0; i--) {
+		/* The root element gets swapped with the last one, then gets ignored */
+		sav->sel = i;
+
+		sav->swps += 1;
+		swap(&sav->arr->v[0], &sav->arr->v[i]);
+
+		if(sort_delay(sav) == STOP) return;
+		if(sort_pause(sav) == STOP) return;
+
+		/* Heapify root element to get highest element at root again */
+		heapify(sav, i, 0);
+	}
+
+	if(sav->sort_status != STOP) sav->sort_status = SORTED;
+	sav->sel = sav->cmp = ARR_MAX + 1;
+	sav->tf = time(NULL);
 }

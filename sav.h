@@ -18,6 +18,7 @@ typedef enum {
 	QUICK_SORT,
 	SHELL_SORT,
 	SELECTION_SORT,
+	HEAP_SORT,
 	ALGORITHMS_COUNT
 } sort_t;
 

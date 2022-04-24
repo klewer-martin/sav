@@ -26,4 +26,7 @@ void quick_sort_partition(SAV *sav, int low, int *middle, int high);
 void shell_sort(SAV *sav);
 void selection_sort(SAV *sav);
 
+void heap_sort(SAV *sav);
+void heapify(SAV *sav, int len, int i);
+
 #endif // __SORT_H__

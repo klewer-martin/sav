@@ -47,29 +47,29 @@ void drw_status_bar(Drw *drw, SAV *sav) {
 	/* TODO: create a function which fetchs the status text to be drawn based on the status */
 	if(sav->status == WELCOME) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"  Welcome to sorting algorithms visualized  [%s sort]  press SPACE to start sorting",
+				"  Welcome to sorting algorithms visualized  [%s]  press SPACE to start sorting",
 				algo_sel_str[sav->sort_algo]);
 	}
 	else if(sav->status == START) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"  %-8s  [%s sort]   press SPACE to start sorting", sort_status_str[OK],
+				"  %-8s  [%s]   press SPACE to start sorting", sort_status_str[OK],
 				algo_sel_str[sav->sort_algo]);
 	}
 	else if(sav->status == RUN) {
 		if(sav->sort_status == PAUSE)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s sort]   L: %ld, C: %ld, S: %ld   Press SPACE to resume", sort_status_str[sav->sort_status],
+					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld   Press SPACE to resume", sort_status_str[sav->sort_status],
 					algo_sel_str[sav->sort_algo], sav->arr->len, sav->cmps,
 					sav->swps);
 		else if(sav->sort_status == SORTED)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s sort]   L: %ld, C: %ld, S: %ld, done in %lds, extra storage used: %ld Bytes",
+					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld, done in %lds, extra storage used: %ld Bytes",
 					sort_status_str[sav->sort_status],
 					algo_sel_str[sav->sort_algo],
 					sav->arr->len, sav->cmps, sav->swps, (sav->tf - sav->ti), sav->B_used);
 		else if(sav->sort_status == RUN)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s sort]   L: %ld, C: %ld, S: %ld", sort_status_str[sav->sort_status],
+					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld", sort_status_str[sav->sort_status],
 					algo_sel_str[sav->sort_algo], sav->arr->len, sav->cmps,
 					sav->swps);
 	}
@@ -141,7 +141,7 @@ status_t Drw_new(Drw **drw) {
 	{
 		int w_text, h_text;
 		TTF_SizeText(font,
-				"SORTED [XXXXXXXXXXs sort] done in XXX.Xs, L: XXXXX,\
+				"SORTED [XXXXXXXXXXXXXXXXXXXXX] done in XXX.Xs, L: XXXXX,\
 				C: XXXXXX, S: XXXXXX, I: XXXXXX, storage used: XXXXXX Bytes",
 				&w_text, &h_text);
 

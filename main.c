@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
+#include <assert.h>
 
 #include "sav.h"
 #include "drw.h"
@@ -23,16 +24,16 @@ static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&merge_sort_wrapper,
 	&quick_sort_wrapper,
 	&shell_sort,
-	&selection_sort
+	&selection_sort,
+	&heap_sort
 };
 
 void *routine_wrapper(void *arg) {
 	SAV *sav = (SAV *)arg;
 
-	if(sav->sort_algo == ALGORITHMS_COUNT) {
-		fprintf(stderr, "ERROR: \"sort_algo\" not set. exiting\n");
-		sav->status = STOP;
-	} else sort_handler[sav->sort_algo](sav);
+	assert((sav->sort_algo != ALGORITHMS_COUNT) && "Default sorting algorithm not set");
+
+	sort_handler[sav->sort_algo](sav);
 
 	return NULL;
 }
@@ -48,8 +49,8 @@ void sort_selector(SAV *sav) {
 /* TODO: Support sound */
 
 int main (void) {
-	SAV *sav;
-	Drw *drw;
+	SAV *sav = NULL;
+	Drw *drw = NULL;
 	time_t tic, toc;
 
 	pthread_t p1 = 0;
@@ -62,7 +63,7 @@ int main (void) {
 	shuffle(sav->arr);
 
 	/* selecting the sorting algorithm */
-	sav->sort_algo = QUICK_SORT;
+	sav->sort_algo = SELECTION_SORT;
 
 	sav->status = WELCOME;
 	sav->sort_status = PAUSE;
@@ -77,6 +78,7 @@ int main (void) {
 
 		drw_array_graph(drw, sav);
 		drw_status_bar(drw, sav);
+
 		SDL_RenderPresent(drw->rend);
 
 		/* Print welcome message only on startup */

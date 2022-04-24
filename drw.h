@@ -44,14 +44,16 @@ typedef struct {
 	char *bar_text;
 } Drw;
 
-static char * const algo_sel_str[ALGORITHMS_COUNT] = {
-	"bubble",
-	"improved bubble",
-	"insertion",
-	"merge",
-	"quick",
-	"shell",
-	"selection"
+static char * const algo_sel_str[ALGORITHMS_COUNT + 1] = {
+	"bubble sort",
+	"improved bubble sort",
+	"insertion sort",
+	"merge sort",
+	"quick sort",
+	"shell sort",
+	"selection sort",
+	"heap sort",
+	"sort not set"
 };
 
 static char * const sort_status_str[STATUS_MAX] = {
