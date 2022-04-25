@@ -1,7 +1,7 @@
 #include "sav.h"
 #include "sort.h"
 
-void reset_sort_stats(SAV *sav) {
+void sort_reset_stats(SAV *sav) {
 	if(sav == NULL) return;
 
 	sav->sel = sav->cmp = ARR_MAX + 1;
@@ -41,4 +41,10 @@ void SAV_destroy(SAV *sav) {
 	free(sav->arr->v);
 	free(sav->arr);
 	free(sav);
+}
+
+void sort_selector(SAV *sav) {
+	if(sav->sort_algo == (ALGORITHMS_COUNT - 1))
+		sav->sort_algo = 0;
+	else sav->sort_algo++;
 }

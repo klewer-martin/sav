@@ -34,6 +34,7 @@ typedef struct {
 status_t SAV_new(SAV **sav);
 void SAV_destroy(SAV *sav);
 
-void reset_sort_stats(SAV *sav);
+void sort_reset_stats(SAV *sav);
+void sort_selector(SAV *sav);
 
 #endif

@@ -104,9 +104,8 @@ void bubble_sort_improved(SAV *sav) {
 	if(sav == NULL) return;
 
 	sav->ti = time(NULL);
-	for(i = 0; (i < sav->arr->len - 1) && (sav->sort_status != STOP) && (swap_happen != false); i++) {
-		if(sort_delay(sav) == STOP) break;
-		if(sort_pause(sav) == STOP) break;
+	swap_happen = false;
+	for(i = 0; (i < sav->arr->len - 1) && (sav->sort_status != STOP); i++) {
 		for(j = 0; j < (sav->arr->len - 1 - i); j++, sav->its++) {
 			sav->sel = j + 1;
 			sav->cmp = j;
@@ -119,6 +118,9 @@ void bubble_sort_improved(SAV *sav) {
 			if(sort_delay(sav) == STOP) break;
 			if(sort_pause(sav) == STOP) break;
 		}
+		if(sort_delay(sav) == STOP) break;
+		if(sort_pause(sav) == STOP) break;
+		if(swap_happen == false) break;
 	}
 
 	sav->tf = time(NULL);
@@ -128,8 +130,6 @@ void bubble_sort_improved(SAV *sav) {
 
 void merge(SAV *sav, int low, int middle, int high) {
 	size_t n1, n2, i, j, k;
-
-	if(sort_pause(sav) == STOP) return;
 
 	n1 = middle - low;
 	n2 = high - middle;
@@ -158,7 +158,7 @@ void merge(SAV *sav, int low, int middle, int high) {
 			sav->arr->v[k] = C[j++];
 		}
 
-		sav->sel = (k + 1);
+		sav->sel = k;
 		sav->cmps += 1;
 		sav->its += 1;
 
@@ -168,15 +168,26 @@ void merge(SAV *sav, int low, int middle, int high) {
 		if(sort_pause(sav) == STOP) return;
 	}
 
-	while(i < n1) sav->arr->v[k++] = B[i++];
-    while(j < n2) sav->arr->v[k++] = C[j++];
+	while(i < n1) {
+		sav->sel = k;
+		sav->arr->v[k++] = B[i++];
+		if(sort_delay(sav) == STOP) return;
+		if(sort_delay(sav) == STOP) return;
+		if(sort_pause(sav) == STOP) return;
+	}
+    while(j < n2) {
+		sav->sel = k;
+		sav->arr->v[k++] = C[j++];
+		if(sort_delay(sav) == STOP) return;
+		if(sort_delay(sav) == STOP) return;
+		if(sort_pause(sav) == STOP) return;
+	}
 }
 
 void merge_sort(SAV *sav, int low, int high) {
 	int middle;
 
 	middle = ((high + low) / 2);
-	sav->its += 1;
 
 	if((high - low) > 1) {
 		/* sort the middle low portion of the array */
@@ -271,7 +282,11 @@ void shell_sort(SAV *sav) {
 			}
             sav->arr->v[j] = temp;
 			sav->swps += 1;
+			if(sort_delay(sav) == STOP) return;
+			if(sort_pause(sav) == STOP) return;
         }
+		if(sort_delay(sav) == STOP) return;
+		if(sort_pause(sav) == STOP) return;
     }
 	sav->tf = time(NULL);
 
@@ -289,8 +304,8 @@ void selection_sort(SAV *sav)
 
 	for (i = 0; i < sav->arr->len; i++) {
 		min = i;
-		sav->sel = i;
 		for (j = i + 1; j < sav->arr->len; j++) {
+			sav->sel = j;
 			if (sav->arr->v[j] < sav->arr->v[min]) min = j;
 			sav->cmps += 1;
 			sav->cmp = j;
@@ -316,17 +331,18 @@ void heapify(SAV *sav, int len, int i) {
 	int child_left = 2 * i + 1;
 	int child_right = 2 * i + 2;
 
-	sav->cmp = child_left;
+	sav->cmp = root;
 	sav->cmps += 1;
 	if((child_left < len) && (sav->arr->v[child_left] > sav->arr->v[root]))
 		root = child_left;
 
-	sav->cmp = child_right;
+	sav->cmp = root;
 	sav->cmps += 1;
 	if((child_right < len) && (sav->arr->v[child_right] > sav->arr->v[root]))
 		root = child_right;
 
 	/* Swap and continue heapifying if root is not root */
+	sav->cmp = root;
 	sav->cmps += 1;
 	if(root != i) {
 		sav->swps += 1;
