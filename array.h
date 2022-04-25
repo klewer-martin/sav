@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define ARR_LEN		128
-#define ARR_MAX		500
+#define ARR_MAX		512
 
 typedef struct {
 	int *v;
@@ -12,5 +12,7 @@ typedef struct {
 } Arr;
 
 void shuffle(Arr *arr);
+void reversed(Arr *arr);
+void in_order(Arr *arr);
 
 #endif

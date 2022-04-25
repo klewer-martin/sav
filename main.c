@@ -15,7 +15,6 @@ void check_events(Drw *, SAV *);
 
 /* void *(*start_routine)(void *), pthread_create routine */
 void *routine_wrapper(void *);
-void sort_selector(SAV *sav);
 
 static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&bubble_sort,
@@ -38,13 +37,7 @@ void *routine_wrapper(void *arg) {
 	return NULL;
 }
 
-void sort_selector(SAV *sav) {
-	if(sav->sort_algo == (ALGORITHMS_COUNT - 1))
-		sav->sort_algo = 0;
-	else sav->sort_algo++;
-}
-
-/* TODO: Support random, reversed, in_order arrays */
+/* TODO: Random, reversed, in_order arrays selector from GUI */
 /* TODO: Support command line arguments */
 /* TODO: Support sound */
 
@@ -52,6 +45,7 @@ int main (void) {
 	SAV *sav = NULL;
 	Drw *drw = NULL;
 	time_t tic, toc;
+	void (*reset_array)(Arr *arr);
 
 	pthread_t p1 = 0;
 	status_t st;
@@ -59,11 +53,12 @@ int main (void) {
 	if((st = SAV_new(&sav)) != OK) goto end;
 	if((st = Drw_new(&drw)) != OK) goto end;
 
-	/* assigns random values to array */
-	shuffle(sav->arr);
+	reset_array = &in_order;
 
 	/* selecting the sorting algorithm */
 	sav->sort_algo = SELECTION_SORT;
+
+	reset_array(sav->arr);
 
 	sav->status = WELCOME;
 	sav->sort_status = PAUSE;
@@ -100,8 +95,8 @@ int main (void) {
 			sav->sort_status = STOP;
 			pthread_join(p1, NULL);
 
-			reset_sort_stats(sav);
-			shuffle(sav->arr);
+			sort_reset_stats(sav);
+			reset_array(sav->arr);
 
 			sav->status = START;
 			sav->sort_status = PAUSE;

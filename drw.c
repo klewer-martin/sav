@@ -58,7 +58,8 @@ void drw_status_bar(Drw *drw, SAV *sav) {
 	else if(sav->status == RUN) {
 		if(sav->sort_status == PAUSE)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld   Press SPACE to resume", sort_status_str[sav->sort_status],
+					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld   Press SPACE to resume",
+					sort_status_str[sav->sort_status],
 					algo_sel_str[sav->sort_algo], sav->arr->len, sav->cmps,
 					sav->swps);
 		else if(sav->sort_status == SORTED)
