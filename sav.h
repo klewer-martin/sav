@@ -31,7 +31,7 @@ typedef struct {
 	size_t sort_delay;
 } SAV;
 
-status_t SAV_new(SAV **sav);
+status_t SAV_create(SAV **sav);
 void SAV_destroy(SAV *sav);
 
 void sort_reset_stats(SAV *sav);

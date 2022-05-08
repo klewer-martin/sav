@@ -47,32 +47,32 @@ void drw_status_bar(Drw *drw, SAV *sav) {
 	/* TODO: create a function which fetchs the status text to be drawn based on the status */
 	if(sav->status == WELCOME) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"  Welcome to sorting algorithms visualized  [%s]  press SPACE to start sorting",
-				algo_sel_str[sav->sort_algo]);
+				"  Welcome to sorting algorithms visualized  [%s] [%s]   press SPACE to start sorting",
+				algo_sel_str[sav->sort_algo], shuffle_t_str[sav->arr->shuffle_sel]);
 	}
 	else if(sav->status == START) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"  %-8s  [%s]   press SPACE to start sorting", sort_status_str[OK],
-				algo_sel_str[sav->sort_algo]);
+				"  %-8s  [%s] [%s]   press SPACE to start sorting", sort_status_str[OK],
+				algo_sel_str[sav->sort_algo], shuffle_t_str[sav->arr->shuffle_sel]);
 	}
 	else if(sav->status == RUN) {
 		if(sav->sort_status == PAUSE)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld   Press SPACE to resume",
+					"  %-8s  [%s] [%s]   L: %ld, C: %ld, S: %ld   Press SPACE to resume",
 					sort_status_str[sav->sort_status],
-					algo_sel_str[sav->sort_algo], sav->arr->len, sav->cmps,
-					sav->swps);
+					algo_sel_str[sav->sort_algo], shuffle_t_str[sav->arr->shuffle_sel],
+					sav->arr->len, sav->cmps, sav->swps);
 		else if(sav->sort_status == SORTED)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld, done in %lds, extra storage used: %ld Bytes",
+					"  %-8s  [%s] [%s]  L: %ld, C: %ld, S: %ld, done in %lds, extra storage used: %ld Bytes",
 					sort_status_str[sav->sort_status],
-					algo_sel_str[sav->sort_algo],
+					algo_sel_str[sav->sort_algo], shuffle_t_str[sav->arr->shuffle_sel],
 					sav->arr->len, sav->cmps, sav->swps, (sav->tf - sav->ti), sav->B_used);
 		else if(sav->sort_status == RUN)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s]   L: %ld, C: %ld, S: %ld", sort_status_str[sav->sort_status],
-					algo_sel_str[sav->sort_algo], sav->arr->len, sav->cmps,
-					sav->swps);
+					"  %-8s  [%s] [%s]  L: %ld, C: %ld, S: %ld", sort_status_str[sav->sort_status],
+					algo_sel_str[sav->sort_algo], shuffle_t_str[sav->arr->shuffle_sel],
+					sav->arr->len, sav->cmps, sav->swps);
 	}
 	else snprintf(drw->bar_text, drw->bar_text_len - 2, "  Exiting ..... ");
 
@@ -94,7 +94,7 @@ void drw_text(Drw *drw, const char *text, int x, int y) {
 	SDL_FreeSurface(drw->text_surface);
 }
 
-status_t Drw_new(Drw **drw) {
+status_t Drw_create(Drw **drw) {
 	SDL_Renderer *rend;
 	SDL_Window *win;
 	TTF_Font *font;

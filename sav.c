@@ -8,7 +8,7 @@ void sort_reset_stats(SAV *sav) {
 	sav->cmps = sav->swps = sav->B_used = 0;
 }
 
-status_t SAV_new(SAV **sav) {
+status_t SAV_create(SAV **sav) {
 	if((*sav = (SAV *)malloc(sizeof(SAV))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
@@ -27,6 +27,7 @@ status_t SAV_new(SAV **sav) {
 		return ERROR_MEMORY_ALLOC;
 
 	(*sav)->arr->len = ARR_LEN;
+	(*sav)->arr->shuffle = NULL;
 
 	if((*sav)->arr == NULL) {
 		return ERROR_MEMORY_ALLOC;

@@ -45,20 +45,20 @@ int main (void) {
 	SAV *sav = NULL;
 	Drw *drw = NULL;
 	time_t tic, toc;
-	void (*reset_array)(Arr *arr);
 
 	pthread_t p1 = 0;
 	status_t st;
 
-	if((st = SAV_new(&sav)) != OK) goto end;
-	if((st = Drw_new(&drw)) != OK) goto end;
+	if((st = SAV_create(&sav)) != OK) goto end;
+	if((st = Drw_create(&drw)) != OK) goto end;
 
-	reset_array = &in_order;
-
-	/* selecting the sorting algorithm */
+	/* default sorting algorithm */
 	sav->sort_algo = SELECTION_SORT;
 
-	reset_array(sav->arr);
+	/* default array shuffle mode */
+	sav->arr->shuffle_sel = IN_ORDER;
+
+	arr_shuffle(sav->arr);
 
 	sav->status = WELCOME;
 	sav->sort_status = PAUSE;
@@ -96,7 +96,7 @@ int main (void) {
 			pthread_join(p1, NULL);
 
 			sort_reset_stats(sav);
-			reset_array(sav->arr);
+			arr_shuffle(sav->arr);
 
 			sav->status = START;
 			sav->sort_status = PAUSE;
@@ -144,6 +144,9 @@ void check_events(Drw *drw, SAV *sav) {
 				break;
 			case SDL_SCANCODE_TAB:
 				sort_selector(sav);
+				break;
+			case SDL_SCANCODE_S:
+				arr_shuffle_next(sav->arr);
 				break;
 			default: break;
 			}

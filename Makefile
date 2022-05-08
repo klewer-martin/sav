@@ -8,10 +8,11 @@ TARGET := sav
 
 .PHONY: all clean
 
-all: $(TARGET) clean
+all: $(TARGET)
 
-$(TARGET): $(OBJS) $(HEADERS)
+$(TARGET): $(OBJS)
 	$(CC) $(CLIBS) $(CFLAGS) -o $@ $^
+	rm -f $(OBJS)
 
 %.o: %.c
 	$(CC) $(CLIBS) $(CFLAGS) -c $< -o $@
