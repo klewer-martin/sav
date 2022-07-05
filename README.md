@@ -4,7 +4,7 @@ The idea is to develop a visual program that shows how an array is being sorted
 
 Written using C and SDL2 library for graphics
 
-![screenshot](https://user-images.githubusercontent.com/64109770/162601645-28579847-bb7e-4e2e-94ef-05f42040a800.png)
+![screenshot](https://user-images.githubusercontent.com/64109770/177228195-dd10ba72-31b1-4c26-a32f-0942d945f6f8.png)
 
 ## Quick start
 ```console
