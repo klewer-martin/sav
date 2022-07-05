@@ -13,7 +13,7 @@
 
 void check_events(Drw *, SAV *);
 
-/* void *(*start_routine)(void *), pthread_create routine */
+/* pthread_create compliant start routine */
 void *routine_wrapper(void *);
 
 static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
@@ -27,7 +27,8 @@ static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&heap_sort
 };
 
-void *routine_wrapper(void *arg) {
+void *routine_wrapper(void *arg)
+{
 	SAV *sav = (SAV *)arg;
 
 	assert((sav->sort_algo != ALGORITHMS_COUNT) && "Default sorting algorithm not set");
@@ -40,8 +41,10 @@ void *routine_wrapper(void *arg) {
 /* TODO: Random, reversed, in_order arrays selector from GUI */
 /* TODO: Support command line arguments */
 /* TODO: Support sound */
+/* TODO: More sorting algorithms */
 
-int main (void) {
+int main (void)
+{
 	SAV *sav = NULL;
 	Drw *drw = NULL;
 	time_t tic, toc;
@@ -52,17 +55,14 @@ int main (void) {
 	if((st = SAV_create(&sav)) != OK) goto end;
 	if((st = Drw_create(&drw)) != OK) goto end;
 
-	/* default sorting algorithm */
-	sav->sort_algo = SELECTION_SORT;
-
-	/* default array shuffle mode */
-	sav->arr->shuffle_sel = IN_ORDER;
-
-	arr_shuffle(sav->arr);
-
+	/* defaults */
+	sav->sort_algo = INSERTION_SORT;
+	sav->arr->shuffle_sel = RANDOM;
 	sav->status = WELCOME;
 	sav->sort_status = PAUSE;
 	tic = time(NULL);
+
+	arr_shuffle(sav->arr);
 
 	/* main loop */
 	while(sav->status != STOP) {
@@ -76,12 +76,11 @@ int main (void) {
 
 		SDL_RenderPresent(drw->rend);
 
-		/* Print welcome message only on startup */
-		if(sav->status == WELCOME)
+		if((sav->status == START) || (sav->status == WELCOME)) {
+			/* Print welcome message during the first WELCOME_MSG_TIME seconds */
 			if(((toc = time(NULL)) - tic) > WELCOME_MSG_TIME)
 				sav->status = START;
 
-		if((sav->status == START) || (sav->status == WELCOME)) {
 			if(sav->sort_status == RUN) {
 				sav->status = RUN;
 
@@ -91,7 +90,7 @@ int main (void) {
 		}
 
 		if(sav->status == RESTART) {
-			/* if sorting thread is runnning stop it */
+			/* if sorting thread is running stop it */
 			sav->sort_status = STOP;
 			pthread_join(p1, NULL);
 
@@ -102,12 +101,13 @@ int main (void) {
 			sav->sort_status = PAUSE;
 		}
 
-		if(sav->sort_status == SORTED)
+		if(sav->sort_status == SORTED) {
+			pthread_join(p1, NULL);
 			sav->sel = sav->cmp = ARR_LEN + 1;
+		}
 	}
 
-	end:
-
+end:
 	/* check if p1 has been initialized */
 	if(p1 != 0) pthread_join(p1, NULL);
 
@@ -116,7 +116,8 @@ int main (void) {
 	return 0;
 }
 
-void check_events(Drw *drw, SAV *sav) {
+void check_events(Drw *drw, SAV *sav)
+{
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
@@ -130,8 +131,16 @@ void check_events(Drw *drw, SAV *sav) {
 				if(sav->status == RUN) sav->status = RESTART;
 				break;
 			case SDL_SCANCODE_SPACE:
-				if(sav->sort_status == PAUSE) sav->sort_status = RUN;
-				else if(sav->sort_status == RUN) sav->sort_status = PAUSE;
+				if(sav->sort_status == PAUSE)
+					sav->sort_status = RUN;
+				else if(sav->sort_status == RUN)
+					sav->sort_status = PAUSE;
+				else if(sav->sort_status == SORTED) {
+					sort_reset_stats(sav);
+					arr_restore_from_bk(sav->arr);
+					sav->status = START;
+					sav->sort_status = RUN;
+				}
 				break;
 			case SDL_SCANCODE_Q:
 				sav->status = sav->sort_status = STOP;
@@ -147,6 +156,10 @@ void check_events(Drw *drw, SAV *sav) {
 				break;
 			case SDL_SCANCODE_S:
 				arr_shuffle_next(sav->arr);
+				if(sav->sort_status == PAUSE) {
+					if(sav->status == RUN) sav->status = RESTART;
+					else arr_shuffle(sav->arr);
+				}
 				break;
 			default: break;
 			}
@@ -154,7 +167,7 @@ void check_events(Drw *drw, SAV *sav) {
 		case SDL_WINDOWEVENT:
 			switch(event.window.event) {
 			case SDL_WINDOWEVENT_RESIZED:
-				SDL_Log("Window resized to %dx%d", event.window.data1, event.window.data2);
+				/* SDL_Log("Window resized to %dx%d", event.window.data1, event.window.data2); */
 				drw->w = event.window.data1;
 				drw->h = event.window.data2;
 

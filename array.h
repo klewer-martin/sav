@@ -2,6 +2,7 @@
 #define __ARRAY_H__
 
 #include <stdlib.h>
+#include "status.h"
 
 #define ARR_LEN		128
 #define ARR_MAX		512
@@ -15,6 +16,7 @@ typedef enum {
 
 typedef struct _Arr {
 	int *v;
+	int *bk;
 	size_t len;
 	shuffle_t shuffle_sel;
 	void (*shuffle)(struct _Arr *arr);
@@ -26,10 +28,14 @@ static char *const shuffle_t_str[MAX_SHUFFLE] = {
 	"random",
 };
 
+status_t Arr_create(Arr **arr);
+void Arr_destroy(Arr *arr);
+
 void arr_random(Arr *arr);
 void arr_reversed(Arr *arr);
 void arr_in_order(Arr *arr);
 
+void arr_restore_from_bk(Arr *arr);
 void arr_shuffle(Arr *arr);
 void arr_shuffle_next(Arr *arr);
 

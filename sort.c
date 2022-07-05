@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <SDL2/SDL.h>
 
 #include "sort.h"
 
@@ -32,7 +33,7 @@ status_t sort_pause(const SAV *sav) {
 
 void insertion_sort(SAV *sav) {
 	int key;
-	size_t i, j;
+	int i, j;
 
 	if(sav == NULL) return;
 	if(sort_pause(sav) == STOP) return;

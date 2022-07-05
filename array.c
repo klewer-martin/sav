@@ -9,10 +9,36 @@ static void (*shuffle_handler[MAX_SHUFFLE])(Arr *arr) = {
 	&arr_random
 };
 
+status_t Arr_create(Arr **arr) {
+	if(((*arr) = (Arr *)malloc(sizeof(Arr))) == NULL)
+		return ERROR_MEMORY_ALLOC;
+
+	if(((*arr)->v = malloc(sizeof(int) * (ARR_LEN + 4))) == NULL)
+		return ERROR_MEMORY_ALLOC;
+
+	if(((*arr)->bk = malloc(sizeof(int) * (ARR_LEN + 4))) == NULL)
+		return ERROR_MEMORY_ALLOC;
+
+	(*arr)->len = ARR_LEN;
+	(*arr)->shuffle = NULL;
+
+	return OK;
+}
+
+void Arr_destroy(Arr *arr) {
+	free(arr->v);
+	free(arr);
+}
+
+void arr_restore_from_bk(Arr *arr) {
+	for(size_t i = 0; i < arr->len; i++)
+		arr->v[i] = arr->bk[i];
+}
+
 void arr_random(Arr *arr) {
 	srand((unsigned int)time(NULL));
 	for(size_t i = 0; i < arr->len; i++)
-		while(!(arr->v[i] = rand() % ARR_MAX));
+		while(!(arr->v[i] = arr->bk[i] = rand() % ARR_MAX));
 
 	printf("ARRAY: Shuffling array done\n");
 }
