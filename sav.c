@@ -9,6 +9,8 @@ void sort_reset_stats(SAV *sav) {
 }
 
 status_t SAV_create(SAV **sav) {
+	status_t st;
+
 	if((*sav = (SAV *)malloc(sizeof(SAV))) == NULL)
 		return ERROR_MEMORY_ALLOC;
 
@@ -20,18 +22,8 @@ status_t SAV_create(SAV **sav) {
 	(*sav)->sort_algo = ALGORITHMS_COUNT;
 	(*sav)->sort_delay = SORT_DELAY_DEFAULT;
 
-	if(((*sav)->arr = (Arr *)malloc(sizeof(Arr))) == NULL)
-		return ERROR_MEMORY_ALLOC;
-
-	if(((*sav)->arr->v = (int *)malloc(sizeof(int) * ARR_LEN)) == NULL)
-		return ERROR_MEMORY_ALLOC;
-
-	(*sav)->arr->len = ARR_LEN;
-	(*sav)->arr->shuffle = NULL;
-
-	if((*sav)->arr == NULL) {
-		return ERROR_MEMORY_ALLOC;
-	}
+	if((st = Arr_create(&(*sav)->arr)) != OK)
+		return st;
 
 	return OK;
 }
@@ -39,8 +31,7 @@ status_t SAV_create(SAV **sav) {
 void SAV_destroy(SAV *sav) {
 	if(sav == NULL) return;
 
-	free(sav->arr->v);
-	free(sav->arr);
+	Arr_destroy(sav->arr);
 	free(sav);
 }
 

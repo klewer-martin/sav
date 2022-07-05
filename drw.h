@@ -30,8 +30,6 @@
 typedef struct {
 	SDL_Renderer *rend;
 	SDL_Window *win;
-	SDL_Surface *text_surface;
-	SDL_Texture *text_texture;
 	SDL_Color text_color;
 	SDL_Rect bar_rect, bar_text_rect;
 	TTF_Font *font;
@@ -39,18 +37,6 @@ typedef struct {
 	size_t x_border, y_border;
 	char *bar_text;
 } Drw;
-
-static char * const algo_sel_str[ALGORITHMS_COUNT + 1] = {
-	"bubble sort",
-	"improved bubble sort",
-	"insertion sort",
-	"merge sort",
-	"quick sort",
-	"shell sort",
-	"selection sort",
-	"heap sort",
-	"sort not set"
-};
 
 static char * const sort_status_str[STATUS_MAX] = {
 	"READY",
@@ -65,9 +51,8 @@ void Drw_destroy(Drw *drw);
 
 void drw_element(SDL_Renderer *rend, int x, int y, int h);
 void drw_element_color(Drw *drw, int x, int y, int h, unsigned int col);
-void drw_text(Drw *drw, const char *text, int x, int y);
 
 void drw_array_graph(Drw *drw, SAV *sav);
-void drw_status_bar(Drw *drw, SAV *sav);
+status_t drw_status_bar(Drw *drw, SAV *sav);
 
 #endif

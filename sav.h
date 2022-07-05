@@ -1,11 +1,8 @@
 #ifndef __SAV_H__
 #define __SAV_H__
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdbool.h>
 #include <time.h>
-#include <SDL2/SDL.h>
+#include <stdbool.h>
 
 #include "util.h"
 #include "array.h"
@@ -29,6 +26,7 @@ typedef struct {
 	status_t status, prev_status, sort_status;
 	sort_t sort_algo;
 	size_t sort_delay;
+	bool quit;
 } SAV;
 
 status_t SAV_create(SAV **sav);
