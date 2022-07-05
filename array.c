@@ -26,6 +26,7 @@ status_t Arr_create(Arr **arr) {
 }
 
 void Arr_destroy(Arr *arr) {
+	free(arr->bk);
 	free(arr->v);
 	free(arr);
 }
