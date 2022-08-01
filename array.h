@@ -15,15 +15,15 @@ typedef enum {
 } shuffle_t;
 
 typedef struct _Arr {
-	int *v;
-	int *bk;
+	int *v;  /* array to be sorted */
+	int *bk; /* copy of the array to be sorted */
 	size_t len;
 	shuffle_t shuffle_sel;
 	void (*shuffle)(struct _Arr *arr);
 } Arr;
 
 static char *const shuffle_t_str[MAX_SHUFFLE] = {
-	"in_order",
+	"in order",
 	"reversed",
 	"random",
 };

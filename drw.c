@@ -38,30 +38,30 @@ static status_t drw_status_bar_fetch_text(Drw *drw, SAV *sav) {
 
 	if(sav->status == WELCOME) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"  Welcome to sorting algorithms visualized  [%s] [%-25s   press SPACE to start sorting",
+				"  Welcome to sorting algorithms visualized  [%s] [%-15s  press SPACE to start sorting",
 				shuffle_t_str[sav->arr->shuffle_sel], algo_sel_str[sav->sort_algo]);
 	}
 	else if(sav->status == START) {
 		snprintf(drw->bar_text, drw->bar_text_len - 2,
-				"  %-8s  [%s] [%-25s   press SPACE to start sorting", sort_status_str[OK],
+				"  %-8s  [%s] [%-15s  press SPACE to start sorting", sort_status_str[OK],
 				shuffle_t_str[sav->arr->shuffle_sel], algo_sel_str[sav->sort_algo]);
 	}
 	else if(sav->status == RUN) {
 		if(sav->sort_status == PAUSE)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s] [%-25s   L: %ld, C: %ld, S: %ld   Press SPACE to resume",
+					"  %-8s  [%s] [%-15s  L:%ld C:%ld S:%ld",
 					sort_status_str[sav->sort_status],
 					shuffle_t_str[sav->arr->shuffle_sel], algo_sel_str[sav->sort_algo],
 					sav->arr->len, sav->cmps, sav->swps);
 		else if(sav->sort_status == SORTED)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s] [%-25s   L: %ld, C: %ld, S: %ld, done in %lds, extra storage used: %ld Bytes",
+					"  %-8s  [%s] [%-15s  L:%ld C:%ld S:%ld, done in %lds, extra storage: %ldB",
 					sort_status_str[sav->sort_status],
 					shuffle_t_str[sav->arr->shuffle_sel], algo_sel_str[sav->sort_algo],
 					sav->arr->len, sav->cmps, sav->swps, (sav->tf - sav->ti), sav->B_used);
 		else if(sav->sort_status == RUN)
 			snprintf(drw->bar_text, drw->bar_text_len - 2,
-					"  %-8s  [%s] [%-25s   L: %ld, C: %ld, S: %ld", sort_status_str[sav->sort_status],
+					"  %-8s  [%s] [%-15s  L:%ld C:%ld S:%ld", sort_status_str[sav->sort_status],
 					shuffle_t_str[sav->arr->shuffle_sel], algo_sel_str[sav->sort_algo],
 					sav->arr->len, sav->cmps, sav->swps);
 	}
@@ -113,21 +113,21 @@ status_t drw_status_bar(Drw *drw, SAV *sav) {
 }
 
 status_t Drw_create(Drw **drw) {
-	SDL_Renderer *rend = NULL;
-	SDL_Window *win = NULL;
 	TTF_Font *font = NULL;
 	status_t st;
 
-	if(((*drw) = (Drw *)malloc(sizeof(Drw))) == NULL) return ERROR_MEMORY_ALLOC;
+	if(((*drw) = (Drw *)malloc(sizeof(Drw))) == NULL)
+		return ERROR_MEMORY_ALLOC;
+
 	memset(*drw, 0, sizeof(Drw));
 
-	if((st = SDL_setup(&win, &rend)) != OK) return st;
+	if((st = SDL_setup(&(*drw)->win, &(*drw)->rend)) != OK)
+		return st;
 
 	font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
-	if(font == NULL) return ERROR_TTF_OPENING_FONT;
+	if(font == NULL)
+		return ERROR_TTF_OPENING_FONT;
 
-	(*drw)->rend = rend;
-	(*drw)->win = win;
 	(*drw)->font = font;
 	(*drw)->font_size = FONT_SIZE;
 	(*drw)->bar_border = 2;
@@ -138,7 +138,7 @@ status_t Drw_create(Drw **drw) {
 	(*drw)->text_color.g = (char)(FONT_COLOR >> 8) & 0xFF;
 	(*drw)->text_color.b = (char)(FONT_COLOR) & 0xFF;
 
-	SDL_GetWindowSize(win, &((*drw)->w), &((*drw)->h));
+	SDL_GetWindowSize((*drw)->win, &((*drw)->w), &((*drw)->h));
 
 	(*drw)->bar_rect.x = (*drw)->bar_border; /* top left + x */
 	(*drw)->bar_rect.y = (*drw)->h - (*drw)->bar_border; /* top left + y, (y < 0) */

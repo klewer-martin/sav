@@ -17,7 +17,7 @@
 #define FONT_NAME	"/home/mk/.local/share/fonts/VictorMono-Bold.ttf"
 #define FONT_COLOR	0xBBBBBB
 
-#define BAR_HEIGHT	14
+#define BAR_HEIGHT	15
 
 #define WIN_MIN_W	800
 #define WIN_MIN_H	600

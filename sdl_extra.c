@@ -15,16 +15,13 @@ status_t SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
 		SDL_WINDOW_RESIZABLE
     );
 
-	*rend = SDL_CreateRenderer(*win, -1, SDL_RENDERER_ACCELERATED);
+	*rend = SDL_CreateRenderer(*win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	if ((*win == NULL) || (rend == NULL))
+	if ((*win == NULL) || (*rend == NULL))
 		return ERROR_NULL_POINTER;
-	else if(TTF_Init() == -1)
-		return ERROR_SDL_FONT_INIT;
 
-	SDL_SetRenderDrawColor(*rend, 32, 32, 32, 0);
-	SDL_RenderClear(*rend);
-	SDL_RenderPresent(*rend);
+	if(TTF_Init() == -1)
+		return ERROR_SDL_FONT_INIT;
 
 	/* compute the window minimum size */
 	min_w = ((ARR_LEN * RECT_WIDTH) + (2 * X_BORDER));
@@ -39,9 +36,9 @@ status_t SDL_cleanup(SDL_Window *win, SDL_Renderer *rend) {
 	if((win == NULL) || (rend == NULL))
 		return ERROR_NULL_POINTER;
 
+	TTF_Quit();
 	SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
-	TTF_Quit();
 	SDL_Quit();
 	return OK;
 }

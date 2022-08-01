@@ -3,12 +3,9 @@
 
 #include "sav.h"
 
-#define SORT_DELAY_DEFAULT  5
-#define SORT_DELAY_MAX      250
-
 static char * const algo_sel_str[ALGORITHMS_COUNT + 1] = {
+	/* "bubble sort]", */
 	"bubble sort]",
-	"improved bubble sort]",
 	"insertion sort]",
 	"merge sort]",
 	"quick sort]",

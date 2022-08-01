@@ -7,8 +7,11 @@
 #include "util.h"
 #include "array.h"
 
+#define SAV_DEFAULT_SORT_DELAY		5
+#define SAV_SORT_DELAY_MAX  500
+
 typedef enum {
-	BUBBLE_SORT,
+	/* BUBBLE_SORT, */
 	BUBBLE_SORT_IMPROVED,
 	INSERTION_SORT,
 	MERGE_SORT,

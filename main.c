@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <pthread.h>
-#include <assert.h>
-
 #include "sav.h"
 #include "drw.h"
 #include "sort.h"
@@ -9,6 +5,11 @@
 #include "sdl_extra.h"
 #include "array.h"
 
+#include <stdio.h>
+#include <pthread.h>
+#include <assert.h>
+
+#define SHOW_FPS true
 #define WELCOME_MSG_TIME 3
 
 void check_events(Drw *, SAV *);
@@ -16,8 +17,8 @@ void check_events(Drw *, SAV *);
 /* pthread_create compliant start routine */
 void *routine_wrapper(void *);
 
-static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
-	&bubble_sort,
+static void (*sort_handler[])(SAV *) = {
+	/* &bubble_sort, */
 	&bubble_sort_improved,
 	&insertion_sort,
 	&merge_sort_wrapper,
@@ -27,8 +28,7 @@ static void (*sort_handler[ALGORITHMS_COUNT])(SAV *) = {
 	&heap_sort
 };
 
-void *routine_wrapper(void *arg)
-{
+void *routine_wrapper(void *arg) {
 	SAV *sav = (SAV *)arg;
 
 	assert((sav->sort_algo != ALGORITHMS_COUNT) && "Default sorting algorithm not set");
@@ -38,16 +38,18 @@ void *routine_wrapper(void *arg)
 	return NULL;
 }
 
-/* TODO: Random, reversed, in_order arrays selector from GUI */
 /* TODO: Support command line arguments */
 /* TODO: Support sound */
 /* TODO: More sorting algorithms */
+/* TODO: add sav methods */
 
 int main (void)
 {
 	SAV *sav = NULL;
 	Drw *drw = NULL;
 	time_t tic, toc;
+	unsigned int ti, tf, dt;
+	short time_per_frame;
 
 	pthread_t p1 = 0;
 	status_t st;
@@ -55,17 +57,22 @@ int main (void)
 	if((st = SAV_create(&sav)) != OK) goto end;
 	if((st = Drw_create(&drw)) != OK) goto end;
 
-	/* defaults */
-	sav->sort_algo = INSERTION_SORT;
-	sav->arr->shuffle_sel = RANDOM;
-	sav->status = WELCOME;
-	sav->sort_status = PAUSE;
 	tic = time(NULL);
-
+	time_per_frame = 16; /* miliseconds */
 	arr_shuffle(sav->arr);
 
+#if SHOW_FPS
+	short fps = 0;
+#endif
+
 	/* main loop */
+	dt = ti = tf = 0;
 	while(sav->status != STOP) {
+		if(!ti) ti = SDL_GetTicks();
+		else dt = tf - ti; /* how many ms for a frame */
+
+		/* printf("DT: %d | TI: %d | TF: %d\n", dt, ti, tf); */
+
 		check_events(drw, sav);
 
 		SDL_SetRenderDrawColor(drw->rend, 29, 28, 28, 0);
@@ -105,6 +112,20 @@ int main (void)
 			pthread_join(p1, NULL);
 			sav->sel = sav->cmp = ARR_LEN + 1;
 		}
+
+        /* if less than `time_per_frame`, delay */
+        if(dt <= time_per_frame)
+            SDL_Delay(time_per_frame - dt);
+
+#if SHOW_FPS
+		if(dt > time_per_frame)
+			fps = 1000 / dt;
+
+		printf("FPS is: %i\n", fps);
+#endif
+
+        ti = tf;
+        tf = SDL_GetTicks();
 	}
 
 end:

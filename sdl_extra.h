@@ -1,11 +1,11 @@
 #ifndef __SDL_EXTRA_H__
 #define __SDL_EXTRA_H__
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-
 #include "array.h"
 #include "status.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #define X_BORDER	40
 #define Y_BORDER	40

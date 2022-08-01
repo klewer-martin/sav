@@ -11,6 +11,5 @@
 
 void end(const char *msg);
 void swap(int *a, int *b);
-void wait_main_thread(status_t *st);
 
 #endif // __UTIL_H__

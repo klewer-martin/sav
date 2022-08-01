@@ -8,7 +8,7 @@
 void set_sort_speed(SAV *sav, size_t new_value) {
 	if(sav == NULL) return;
 
-	if((new_value > 0) && (new_value <= SORT_DELAY_MAX)) {
+	if((new_value > 0) && (new_value <= SAV_SORT_DELAY_MAX)) {
 		printf("INFO: Updating sort_delay to: %ld\n", new_value);
 		sav->sort_delay = new_value;
 	}
@@ -363,9 +363,8 @@ void heap_sort(SAV *sav) {
 	sav->ti = time(NULL);
 
 	/* Build max heap */
-	for (i = ((sav->arr->len / 2) - 1); i >= 0; i--) {
+	for (i = ((sav->arr->len / 2) - 1); i >= 0; i--)
 		heapify(sav, sav->arr->len, i);
-	}
 
 	/* Heap sort */
 	for (i = (sav->arr->len - 1); i >= 0; i--) {

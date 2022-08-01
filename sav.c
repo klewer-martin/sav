@@ -17,13 +17,16 @@ status_t SAV_create(SAV **sav) {
 	(*sav)->sel = (*sav)->cmp = ARR_MAX + 1;
 	(*sav)->cmps = (*sav)->swps = (*sav)->its = (*sav)->B_used = 0;
 
-	(*sav)->status = RUN;
+	/* defaults */
+	(*sav)->status = WELCOME;
 	(*sav)->sort_status = PAUSE;
-	(*sav)->sort_algo = ALGORITHMS_COUNT;
-	(*sav)->sort_delay = SORT_DELAY_DEFAULT;
+	(*sav)->sort_algo = INSERTION_SORT;
+	(*sav)->sort_delay = SAV_DEFAULT_SORT_DELAY;
 
 	if((st = Arr_create(&(*sav)->arr)) != OK)
 		return st;
+
+	(*sav)->arr->shuffle_sel = RANDOM;
 
 	return OK;
 }
