@@ -7,7 +7,7 @@ Written in C using SDL2 library for graphics
 ![sav](https://user-images.githubusercontent.com/64109770/182064099-9aeca5f6-7751-4e43-b4ae-bbbc29a288d6.gif)
 
 ## Dependencies
-- ![SDL2](https://www.libsdl.org/)
+- [SDL2](https://www.libsdl.org/)
 
 ## Building and running
 ```console
