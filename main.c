@@ -9,7 +9,7 @@
 #include <pthread.h>
 #include <assert.h>
 
-#define SHOW_FPS true
+#define SHOW_FPS false
 #define WELCOME_MSG_TIME 3
 
 void check_events(Drw *, SAV *);
@@ -134,7 +134,9 @@ end:
 
 	SAV_destroy(sav);
 	Drw_destroy(drw);
-	return 0;
+
+	if(st != OK) printf("%s\n", status_string[st]);
+	return st;
 }
 
 void check_events(Drw *drw, SAV *sav)

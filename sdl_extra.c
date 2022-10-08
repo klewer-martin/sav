@@ -15,7 +15,7 @@ status_t SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
 		SDL_WINDOW_RESIZABLE
     );
 
-	*rend = SDL_CreateRenderer(*win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	*rend = SDL_CreateRenderer(*win, -1, SDL_RENDERER_ACCELERATED);
 
 	if ((*win == NULL) || (*rend == NULL))
 		return ERROR_NULL_POINTER;

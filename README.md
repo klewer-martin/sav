@@ -8,12 +8,12 @@ Written in C using SDL2 library for graphics
 
 ## Dependencies
 - [SDL2](https://www.libsdl.org/)
+- [SDL2-ttf](https://github.com/libsdl-org/SDL_ttf/releases)
 
 ## Building and running
 ```console
-$ make
+$ make -j $(nproc)
 $ ./sav
-
 ```
 
 ## Keybindings
@@ -22,6 +22,10 @@ $ ./sav
 - `tab` - change sorting algorithm.
 - `S` - change array shuffle method (random, in order, reversed).
 - `R` - restart.
+
+## Font
+
+The font used is [Victor Mono Regular](https://rubjo.github.io/victor-mono/)
 
 ## License
 [MIT](./LICENSE)
