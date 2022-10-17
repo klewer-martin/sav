@@ -150,6 +150,7 @@ void merge(SAV *sav, int low, int middle, int high) {
 
 	/* merge B and C in order */
 	for(k = low, i = j = 0; (k < high) && (i < n1) && (j < n2); k++) {
+		sav->cmp = middle + j;
 		if(B[i] <= C[j]) {
 			sav->arr->v[k] = B[i++];
 			sav->cmps += 1;
@@ -307,9 +308,11 @@ void selection_sort(SAV *sav)
 		min = i;
 		for (j = i + 1; j < sav->arr->len; j++) {
 			sav->sel = j;
-			if (sav->arr->v[j] < sav->arr->v[min]) min = j;
+			if (sav->arr->v[j] < sav->arr->v[min]) {
+				min = j;
+				sav->cmp = min;
+			}
 			sav->cmps += 1;
-			sav->cmp = j;
 			if(sort_delay(sav) == STOP) return;
 			if(sort_pause(sav) == STOP) return;
 		}
