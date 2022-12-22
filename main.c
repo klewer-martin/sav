@@ -3,63 +3,36 @@
 #include "sort.h"
 #include "util.h"
 #include "sdl_extra.h"
-#include "array.h"
 
 #include <stdio.h>
 #include <pthread.h>
-#include <assert.h>
 
-#define SHOW_FPS true
+#define SHOW_FPS false
 #define WELCOME_MSG_TIME 3
 
 void check_events(Drw *, SAV *);
 
-/* pthread_create compliant start routine */
-void *routine_wrapper(void *);
-
-static void (*sort_handler[])(SAV *) = {
-	/* &bubble_sort, */
-	&bubble_sort_improved,
-	&insertion_sort,
-	&merge_sort_wrapper,
-	&quick_sort_wrapper,
-	&shell_sort,
-	&selection_sort,
-	&heap_sort
-};
-
-void *routine_wrapper(void *arg) {
-	SAV *sav = (SAV *)arg;
-
-	assert((sav->sort_algo != ALGORITHMS_COUNT) && "Default sorting algorithm not set");
-
-	sort_handler[sav->sort_algo](sav);
-
-	return NULL;
-}
-
+/* TODO: fix Drw and SAV names and methods? */
+/* TODO: add sav methods */
 /* TODO: Support command line arguments */
 /* TODO: Support sound */
 /* TODO: More sorting algorithms */
-/* TODO: add sav methods */
 
 int main (void)
 {
 	SAV *sav = NULL;
 	Drw *drw = NULL;
 	time_t tic, toc;
-	unsigned int ti, tf, dt;
-	short time_per_frame;
-
+	unsigned int ti, tf, dt, time_per_frame;
 	pthread_t p1 = 0;
 	status_t st;
 
 	if((st = SAV_create(&sav)) != OK) goto end;
-	if((st = Drw_create(&drw)) != OK) goto end;
+	if((st = drw_create(&drw)) != OK) goto end;
 
 	tic = time(NULL);
 	time_per_frame = 16; /* miliseconds */
-	arr_shuffle(sav->arr);
+	sav->arr->shuffle(sav->arr);
 
 #if SHOW_FPS
 	short fps = 0;
@@ -71,17 +44,8 @@ int main (void)
 		if(!ti) ti = SDL_GetTicks();
 		else dt = tf - ti; /* how many ms for a frame */
 
-		/* printf("DT: %d | TI: %d | TF: %d\n", dt, ti, tf); */
-
 		check_events(drw, sav);
-
-		SDL_SetRenderDrawColor(drw->rend, 29, 28, 28, 0);
-		SDL_RenderClear(drw->rend);
-
-		drw_array_graph(drw, sav);
-		drw_status_bar(drw, sav);
-
-		SDL_RenderPresent(drw->rend);
+		drw_update_frame(drw, sav);
 
 		if((sav->status == START) || (sav->status == WELCOME)) {
 			/* Print welcome message during the first WELCOME_MSG_TIME seconds */
@@ -92,7 +56,7 @@ int main (void)
 				sav->status = RUN;
 
 				/* start sorting thread */
-				pthread_create(&p1, NULL, &routine_wrapper, (void *)sav);
+				pthread_create(&p1, NULL, &start_sorting, (void *)sav);
 			}
 		}
 
@@ -102,7 +66,7 @@ int main (void)
 			pthread_join(p1, NULL);
 
 			sort_reset_stats(sav);
-			arr_shuffle(sav->arr);
+			sav->arr->shuffle(sav->arr);
 
 			sav->status = START;
 			sav->sort_status = PAUSE;
@@ -113,9 +77,9 @@ int main (void)
 			sav->sel = sav->cmp = ARR_LEN + 1;
 		}
 
-        /* if less than `time_per_frame`, delay */
-        if(dt <= time_per_frame)
-            SDL_Delay(time_per_frame - dt);
+		/* if less than `time_per_frame`, delay */
+		if(dt <= time_per_frame)
+			SDL_Delay(time_per_frame - dt);
 
 #if SHOW_FPS
 		if(dt > time_per_frame)
@@ -124,8 +88,8 @@ int main (void)
 		printf("FPS is: %i\n", fps);
 #endif
 
-        ti = tf;
-        tf = SDL_GetTicks();
+		ti = tf;
+		tf = SDL_GetTicks();
 	}
 
 end:
@@ -133,7 +97,7 @@ end:
 	if(p1 != 0) pthread_join(p1, NULL);
 
 	SAV_destroy(sav);
-	Drw_destroy(drw);
+	drw_destroy(drw);
 	return 0;
 }
 
@@ -177,9 +141,14 @@ void check_events(Drw *drw, SAV *sav)
 				break;
 			case SDL_SCANCODE_S:
 				arr_shuffle_next(sav->arr);
-				if(sav->sort_status == PAUSE) {
-					if(sav->status == RUN) sav->status = RESTART;
+				if(sav->sort_status == PAUSE || sav->sort_status == SORTED) {
+					if(sav->status == RUN)
+						sav->status = RESTART;
 					else arr_shuffle(sav->arr);
+				}
+				else if (sav->sort_status == RUN) {
+					sav->status = RESTART;
+					arr_shuffle(sav->arr);
 				}
 				break;
 			default: break;
