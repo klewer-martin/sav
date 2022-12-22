@@ -29,7 +29,6 @@ typedef struct {
 	status_t status, prev_status, sort_status;
 	sort_t sort_algo;
 	size_t sort_delay;
-	bool quit;
 } SAV;
 
 status_t SAV_create(SAV **sav);

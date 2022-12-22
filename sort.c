@@ -5,6 +5,28 @@
 
 #include "sort.h"
 
+static void (*sort_handler[])(SAV *) = {
+	/* &bubble_sort, */
+	&bubble_sort_improved,
+	&insertion_sort,
+	&merge_sort_wrapper,
+	&quick_sort_wrapper,
+	&shell_sort,
+	&selection_sort,
+	&heap_sort
+};
+
+/* pthread_create compliant start routine */
+void *start_sorting(void *arg) {
+	SAV *sav = (SAV *)arg;
+
+	assert((sav->sort_algo != ALGORITHMS_COUNT) && "Default sorting algorithm not set");
+
+	sort_handler[sav->sort_algo](sav);
+
+	return NULL;
+}
+
 void set_sort_speed(SAV *sav, size_t new_value) {
 	if(sav == NULL) return;
 
@@ -33,7 +55,7 @@ status_t sort_pause(const SAV *sav) {
 
 void insertion_sort(SAV *sav) {
 	int key;
-	int i, j;
+	size_t i, j;
 
 	if(sav == NULL) return;
 	if(sort_pause(sav) == STOP) return;

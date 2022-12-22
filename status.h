@@ -20,7 +20,7 @@ typedef enum {
 	STATUS_MAX
 } status_t;
 
-static char * const status_string[STATUS_MAX] = {
+static char* const status_string[STATUS_MAX] = {
 	"OK",
 	"RUN",
 	"PAUSE",

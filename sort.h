@@ -2,20 +2,10 @@
 #define __SORT_H__
 
 #include "sav.h"
-
-static char * const algo_sel_str[ALGORITHMS_COUNT + 1] = {
-	/* "bubble sort]", */
-	"bubble sort]",
-	"insertion sort]",
-	"merge sort]",
-	"quick sort]",
-	"shell sort]",
-	"selection sort]",
-	"heap sort]",
-	"sort not set]"
-};
+#include "assert.h"
 
 void set_sort_speed(SAV *sav, size_t new_value);
+void *start_sorting(void *arg);
 
 void bubble_sort(SAV *);
 void bubble_sort_improved(SAV *);

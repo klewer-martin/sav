@@ -9,6 +9,7 @@
     ((color) >> (8 * 1)) & 0xFF, \
     ((color) >> (8 * 0)) & 0xFF
 
+
 void end(const char *msg);
 void swap(int *a, int *b);
 

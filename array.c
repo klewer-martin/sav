@@ -20,7 +20,7 @@ status_t Arr_create(Arr **arr) {
 		return ERROR_MEMORY_ALLOC;
 
 	(*arr)->len = ARR_LEN;
-	(*arr)->shuffle = NULL;
+	(*arr)->shuffle = &arr_shuffle;
 
 	return OK;
 }
@@ -50,7 +50,7 @@ void arr_reversed(Arr *arr) {
 
 	per_element = (ARR_MAX / arr->len);
 	for(i = 0; i < arr->len; i++)
-		arr->v[i] = (arr->len * per_element) - (i * per_element);
+		arr->v[i] = arr->bk[i] = (arr->len * per_element) - (i * per_element);
 }
 
 void arr_in_order(Arr *arr) {
@@ -60,7 +60,7 @@ void arr_in_order(Arr *arr) {
 	per_element = (ARR_MAX / arr->len);
 
 	for(i = 0; i < arr->len; i++)
-		arr->v[i] = (i * per_element);
+		arr->v[i] = arr->bk[i] = (i * per_element);
 }
 
 void arr_shuffle(Arr *arr) {

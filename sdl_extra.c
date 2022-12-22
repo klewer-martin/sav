@@ -1,8 +1,6 @@
 #include "sdl_extra.h"
 
 status_t SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
-	int min_w, min_h;
-
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         return ERROR_SDL_INIT;
 
@@ -23,12 +21,6 @@ status_t SDL_setup(SDL_Window **win, SDL_Renderer **rend) {
 	if(TTF_Init() == -1)
 		return ERROR_SDL_FONT_INIT;
 
-	/* compute the window minimum size */
-	min_w = ((ARR_LEN * RECT_WIDTH) + (2 * X_BORDER));
-	min_h = ((ARR_MAX) + (2 * Y_BORDER) + TOP_BORDER);
-
-	SDL_SetWindowMinimumSize(*win, min_w, min_h);
-	/* SDL_SetWindowMaximumSize(*win, min_w, min_h); */
 	return OK;
 }
 
