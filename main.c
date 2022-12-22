@@ -97,6 +97,7 @@ end:
 	if(p1 != 0) pthread_join(p1, NULL);
 
 	SAV_destroy(sav);
+
 	drw_destroy(drw);
 	return 0;
 }

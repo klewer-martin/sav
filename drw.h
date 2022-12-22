@@ -14,7 +14,7 @@
 #define NORM_COLOR	0xFF000000
 
 #define FONT_SIZE	12
-#define FONT_NAME	"/home/mk/.local/share/fonts/VictorMono-Bold.ttf"
+#define FONT_NAME	"VictorMono-Regular.ttf"
 #define FONT_COLOR	0xBBBBBB
 
 #define BAR_HEIGHT	15
